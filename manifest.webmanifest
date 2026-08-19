@@ -1,0 +1,20 @@
+{
+  "id": "toei-muryo-route",
+  "name": "都営むりょうルート",
+  "short_name": "むりょうルート",
+  "description": "都営交通無料乗車券で、どこまで無料で行けるかを調べる乗換案内。電波が届かない場所でも使えます。",
+  "lang": "ja",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f5f7",
+  "theme_color": "#b6007a",
+  "categories": ["travel", "navigation", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

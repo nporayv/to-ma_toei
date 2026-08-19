@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>都営むりょうルート — 無料乗車券で行ける道をさがす</title>
+<meta name="description" content="都営交通無料乗車券をお持ちの方向けの乗換案内。任意の駅から目的の駅まで、都営線をできるだけ使って運賃をおさえる経路を案内します。" />
+<link rel="stylesheet" href="style.css" />
+
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#b6007a" />
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="むりょうルート" />
+</head>
+<body>
+
+<a class="skip-link" href="#result">検索結果へskip</a>
+
+<div id="updateBar" class="update-bar" role="status" hidden>
+  <span>新しいデータがあります。</span>
+  <button type="button" id="updateBtn">更新する</button>
+</div>
+
+<header class="site-header">
+  <h1>都営むりょうルート</h1>
+  <p class="tagline">都営交通無料乗車券で、どこまで無料で行けるかを調べます</p>
+</header>
+
+<main>
+  <form id="searchForm" class="search-card" novalidate>
+    <div class="io-row">
+      <div class="ac-field">
+        <label for="fromInput">出発駅</label>
+        <input type="text" id="fromInput" class="ac-input" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-autocomplete="list"
+               aria-controls="fromList" aria-describedby="fromHelp"
+               placeholder="例: 青砥" />
+        <p id="fromHelp" class="help">駅名を入力すると候補が出ます</p>
+        <ul id="fromList" class="ac-list" role="listbox" aria-label="出発駅の候補" hidden></ul>
+      </div>
+
+      <button type="button" id="swapBtn" class="swap-btn" aria-label="出発駅と到着駅を入れかえる">
+        <span aria-hidden="true">⇅</span>
+      </button>
+
+      <div class="ac-field">
+        <label for="toInput">到着駅</label>
+        <input type="text" id="toInput" class="ac-input" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-autocomplete="list"
+               aria-controls="toList" aria-describedby="toHelp"
+               placeholder="例: 中野坂上" />
+        <p id="toHelp" class="help">駅名を入力すると候補が出ます</p>
+        <ul id="toList" class="ac-list" role="listbox" aria-label="到着駅の候補" hidden></ul>
+      </div>
+    </div>
+
+    <details class="options">
+      <summary>手帳の種別を設定する<span class="opt-summary" id="optSummary"></span></summary>
+      <fieldset>
+        <legend>手帳の種別</legend>
+        <label class="radio"><input type="radio" name="kind" value="type2" checked /> 第2種(本人のみ割引)</label>
+        <label class="radio"><input type="radio" name="kind" value="type1" /> 第1種(介護者も割引)</label>
+      </fieldset>
+      <label class="check"><input type="checkbox" id="companion" /> 介護者と一緒に乗る</label>
+      <p class="help">
+        <strong>他社線の割引は、ひとりで乗ると多くの場合きかない</strong>ため、
+        都営線をどれだけ使えるかで運賃が決まります。
+        JR・東京メトロ・東急・東武・小田急・京急・京王などは、ひとりで乗る場合
+        片道100kmを超えないと割引になりません(都内はすべて100km未満です)。
+        京成線は自社線内なら距離に関係なく半額です。
+        第1種で介護者と一緒に乗るときは、どの社も距離に関係なく半額になります。
+      </p>
+    </details>
+
+    <button type="submit" class="go-btn">経路をさがす</button>
+  </form>
+
+  <section id="result" class="result" aria-live="polite" aria-atomic="false">
+    <div class="placeholder">
+      <p>出発駅と到着駅を入れて「経路をさがす」を押してください。</p>
+      <p class="ex">
+        ためしに:
+        <button type="button" class="chip" data-from="青砥" data-to="中野坂上">青砥 → 中野坂上</button>
+        <button type="button" class="chip" data-from="吉祥寺" data-to="浅草">吉祥寺 → 浅草</button>
+        <button type="button" class="chip" data-from="町田" data-to="北千住">町田 → 北千住</button>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <h2>このサービスについて</h2>
+  <p>
+    <strong>都営交通無料乗車券</strong>の対象は 都営地下鉄(浅草線・三田線・新宿線・大江戸線)・
+    都電荒川線・日暮里舎人ライナー・都バス です。本サービスは鉄道のみを扱い、都バスは対象外です。
+  </p>
+  <p>
+    <strong>運賃は概算です。</strong>駅の緯度経度から営業キロを推定して各社の運賃表にあてはめているため、
+    実際の運賃と数十円ずれることがあります。割引の適用可否は最終的に各社の窓口の判断によります。
+  </p>
+  <p>
+    <strong>直通運転を使うときの注意:</strong> 他社線と都営線をまたいで乗る場合、
+    ICカード式より磁気式の無料乗車券のほうが便利です。ICカード式だと入場と出場を同じカードで
+    行う必要があるため、出場時に有人改札での精算手続きが必要になります
+    (<a href="https://www.kotsu.metro.tokyo.jp/other/kanren/fare/free.html" target="_blank" rel="noopener">東京都交通局の案内</a>)。
+  </p>
+  <p>
+    <strong>入力した駅名は端末の外に送信されません。</strong>検索はすべて端末の中で行っています。
+    利用者の記録も取っていません。
+  </p>
+  <p>
+    <strong>電波が届かなくても使えます。</strong>いちど開いておけば、地下や圏外でも動きます。
+    ホーム画面に追加しておくとアプリのように使えます
+    (iPhoneはSafariの共有ボタン →「ホーム画面に追加」、Androidはメニュー →「アプリをインストール」)。
+  </p>
+  <p class="src">
+    時刻・運行状況は扱いません。駅データ出典: <a href="https://ekidata.jp/" target="_blank" rel="noopener">駅データ.jp</a>
+    / 対象範囲: 東京・神奈川・埼玉・千葉の鉄道130路線
+    / データ作成日: <span id="dataDate">—</span>
+  </p>
+</footer>
+
+<script src="fares.js"></script>
+<script src="router.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
