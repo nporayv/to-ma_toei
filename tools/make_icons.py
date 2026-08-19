@@ -3,8 +3,13 @@
 """
 PWA用のアイコンを生成する。 python tools/make_icons.py で実行。
 
-フォントに依存しないよう図形だけで描く。
-図柄は「経路」: 上半分が有料区間(白)、下半分が無料区間(緑)の路線図に見立てている。
+意匠上の制約:
+  ・白地に赤十字は赤十字標章条約および国内法で使用が禁じられているため、十字形は使わない。
+  ・ヘルプマークは東京都の登録商標で改変できないため、模倣しない。
+  → 経路(線と3つの駅)のモチーフを、RayVのロゴに合わせた白地・赤で表現する。
+
+白地のままだと明るいホーム画面で輪郭が消えるため、通常アイコンには赤い枠を付ける。
+マスカブル(Androidで円などに切り抜かれる)は枠が切れてしまうので、枠なしで中央に寄せる。
 """
 
 import os
@@ -13,57 +18,54 @@ from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(os.path.dirname(HERE), "icons")
 
-BG = (182, 0, 122)        # 都営カラー
-PAID = (255, 255, 255)    # 有料区間
-FREE = (74, 222, 128)     # 無料区間
-STOP = (255, 255, 255)
+RED = (208, 42, 43)       # RayVのロゴに合わせた赤
+WHITE = (255, 255, 255)
 
 
-def draw_icon(size, padding_ratio):
-    """padding_ratio: マスカブル用に中央へ寄せる余白の割合"""
+def draw_icon(size, pad_ratio, border):
     ss = 4  # アンチエイリアス用に4倍で描いて縮小する
     s = size * ss
-    img = Image.new("RGBA", (s, s), BG + (255,))
+    img = Image.new("RGBA", (s, s), WHITE + (255,))
     d = ImageDraw.Draw(img)
 
-    pad = s * padding_ratio
+    if border:
+        bw = s * 0.055
+        d.rounded_rectangle([bw / 2, bw / 2, s - bw / 2, s - bw / 2],
+                            radius=s * 0.20, outline=RED, width=int(bw))
+
+    pad = s * pad_ratio
     inner = s - pad * 2
     cx = s / 2
-
-    # 路線の縦棒
-    bar_w = inner * 0.17
-    top = pad + inner * 0.10
-    bottom = pad + inner * 0.90
+    top = pad + inner * 0.11
     mid = pad + inner * 0.50
+    bottom = pad + inner * 0.89
+    bar = inner * 0.15
 
-    d.rounded_rectangle([cx - bar_w / 2, top, cx + bar_w / 2, mid],
-                        radius=bar_w / 2, fill=PAID)
-    d.rounded_rectangle([cx - bar_w / 2, mid - bar_w / 2, cx + bar_w / 2, bottom],
-                        radius=bar_w / 2, fill=FREE)
+    d.rounded_rectangle([cx - bar / 2, top, cx + bar / 2, bottom],
+                        radius=bar / 2, fill=RED)
 
-    # 駅を表す丸(出発・乗換・到着)
     r_out = inner * 0.115
-    r_in = r_out * 0.52
-    for cy, ring in ((top, STOP), (mid, FREE), (bottom, FREE)):
-        d.ellipse([cx - r_out, cy - r_out, cx + r_out, cy + r_out], fill=ring)
-        d.ellipse([cx - r_in, cy - r_in, cx + r_in, cy + r_in], fill=BG + (255,))
+    r_in = r_out * 0.5
+    for cy in (top, mid, bottom):
+        d.ellipse([cx - r_out, cy - r_out, cx + r_out, cy + r_out], fill=RED)
+        d.ellipse([cx - r_in, cy - r_in, cx + r_in, cy + r_in], fill=WHITE + (255,))
 
     return img.resize((size, size), Image.LANCZOS)
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    # 通常アイコンは余白すこし、マスカブルは丸く切られるので中央へ寄せる
     specs = [
-        ("icon-192.png", 192, 0.10),
-        ("icon-512.png", 512, 0.10),
-        ("icon-maskable-512.png", 512, 0.20),
-        ("apple-touch-icon.png", 180, 0.10),
-        ("favicon-32.png", 32, 0.06),
+        # (ファイル名, 大きさ, 余白, 枠)
+        ("icon-192.png", 192, 0.14, True),
+        ("icon-512.png", 512, 0.14, True),
+        ("icon-maskable-512.png", 512, 0.24, False),  # 切り抜かれるので枠なし・中央寄せ
+        ("apple-touch-icon.png", 180, 0.14, True),
+        ("favicon-32.png", 32, 0.10, True),
     ]
-    for name, size, pad in specs:
+    for name, size, pad, border in specs:
         p = os.path.join(OUT, name)
-        draw_icon(size, pad).save(p)
+        draw_icon(size, pad, border).save(p)
         print("%-26s %4dpx  %5.1f KB" % (name, size, os.path.getsize(p) / 1024))
 
 

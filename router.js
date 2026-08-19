@@ -209,8 +209,11 @@ function haversineM(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-// --- 最速経路(所要時間のみのダイクストラ)。運賃比較の基準に使う。 ----------
-function searchFastest(net, from, to) {
+// --- 時間重視の探索。運賃は見ない。 ----------------------------------------
+// penalty を大きくすると「乗換の少ない経路」が選ばれるようになる。
+// 移動そのものが負担になる利用者にとって、乗換の少なさは運賃と同じくらい重要なので、
+// この関数を penalty を変えて複数回まわし、候補を集める。
+function searchWeighted(net, from, to, penalty) {
   const best = new Map([[from, 0]]);
   const prev = new Map();
   const heap = new MinHeap();
@@ -221,8 +224,10 @@ function searchFastest(net, from, to) {
     if (cur.st === to) break;
     for (const e of net.adj.get(cur.st) || []) {
       let t = cur.pri + e.min;
-      if (cur.line !== null && e.line !== cur.line && !e.walk) {
-        t += THROUGH_PAIRS.has(throughKey(String(cur.line), String(e.line))) ? THROUGH_MIN : TRANSFER_MIN;
+      if (e.walk) {
+        t += penalty - TRANSFER_MIN > 0 ? penalty - TRANSFER_MIN : 0;  // 徒歩も乗換のうち
+      } else if (cur.line !== null && e.line !== cur.line) {
+        t += THROUGH_PAIRS.has(throughKey(String(cur.line), String(e.line))) ? THROUGH_MIN : penalty;
       }
       if (t < (best.get(e.to) ?? Infinity)) {
         best.set(e.to, t);
@@ -233,6 +238,10 @@ function searchFastest(net, from, to) {
   }
   if (!best.has(to)) return null;
   return { steps: rebuild(prev, from, to), time: best.get(to) };
+}
+
+function searchFastest(net, from, to) {
+  return searchWeighted(net, from, to, TRANSFER_MIN);
 }
 
 function rebuild(prev, from, to) {
@@ -436,11 +445,21 @@ function planRoutes(net, from, to, opts) {
   if (!fast) return { options: [], fastest: null, best: null, unreachable: true };
 
   const fastest = evaluateRoute(net, fast.steps, opts);
-  const raw = searchByFare(net, from, to, opts, fast.time + TIME_SLACK);
+
+  // 候補を3方向から集める:
+  //   運賃重視 / 時間重視 / 乗換の少なさ重視
+  // 乗換の少ない経路は、運賃が高くても選びたい人がいる。
+  // 移動そのものが負担になる利用者にとって、乗換1回の重みは運賃より大きいことがある。
+  const candidates = searchByFare(net, from, to, opts, fast.time + TIME_SLACK);
+  candidates.push(fast.steps);
+  for (const penalty of [25, 60]) {
+    const r = searchWeighted(net, from, to, penalty);
+    if (r) candidates.push(r.steps);
+  }
 
   const options = [];
   const seen = new Set();
-  for (const steps of raw.concat([fast.steps])) {
+  for (const steps of candidates) {
     const ev = evaluateRoute(net, steps, opts);
     if (!ev) continue;
     const key = ev.legs.map((l) => l.line + ":" + l.path[0] + ">" + l.path.slice(-1)[0]).join("/");
@@ -448,13 +467,27 @@ function planRoutes(net, from, to, opts) {
     seen.add(key);
     options.push(ev);
   }
-  options.sort((a, b) => a.totalActual - b.totalActual || a.time - b.time);
 
-  // 運賃・時間ともに他に劣る案は表示しない
-  const shown = [];
-  let bt = Infinity;
-  for (const o of options) {
-    if (o.time < bt - 0.5) { shown.push(o); bt = o.time; }
-  }
-  return { options: shown.slice(0, 4), fastest, best: shown[0] || null };
+  // 運賃・所要時間・乗換回数の3つで、どれか1つでも勝っている経路だけ残す
+  // (すべてで他に劣る案は出しても選ぶ理由がない)
+  const shown = options.filter((o) => !options.some((p) =>
+    p !== o &&
+    p.totalActual <= o.totalActual && p.time <= o.time && p.transfers <= o.transfers &&
+    (p.totalActual < o.totalActual || p.time < o.time || p.transfers < o.transfers)
+  ));
+  shown.sort((a, b) => a.totalActual - b.totalActual || a.time - b.time || a.transfers - b.transfers);
+
+  // それぞれの経路が「何で優れているか」を印にする
+  const min = (f) => Math.min(...shown.map(f));
+  const cheapest = min((o) => o.totalActual);
+  const quickest = min((o) => o.time);
+  const fewest = min((o) => o.transfers);
+  shown.forEach((o) => {
+    o.badges = [];
+    if (o.totalActual === cheapest) o.badges.push("いちばん安い");
+    if (o.transfers === fewest) o.badges.push("乗換が少ない");
+    if (o.time === quickest) o.badges.push("いちばん速い");
+  });
+
+  return { options: shown.slice(0, 5), fastest, best: shown[0] || null };
 }

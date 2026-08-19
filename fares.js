@@ -54,6 +54,7 @@ const FARE_TABLES = {
 //
 //   solo の意味:
 //     "always"    … 単独乗車でも距離条件なしで5割引
+//     "over50km"  … 単独乗車は自社線内50km超のみ5割引
 //     "over100km" … 単独乗車は片道100km(101km)超のみ5割引 = 都内では実質割引なし
 //
 //   なお第1種は介護者と同時に乗車する場合、どの社も距離条件なしで
@@ -61,11 +62,20 @@ const FARE_TABLES = {
 //   第2種の介護者は割引対象外(東京メトロは「適用されません」と明記)。
 // ---------------------------------------------------------------------------
 const DISCOUNT_RULES = {
-  // 京成は自社線内で完結するなら第1種・第2種とも距離条件なしで5割引。
-  // 他社線への連絡乗車券にする場合のみ通算100km超が条件になるが、
-  // 無料乗車券の利用者は都営線を別に乗るので、京成は線内完結として扱ってよい。
-  // https://www.keisei.co.jp/keisei/tetudou/accessj/goriyo.php
+  // 京成グループは距離条件なしで5割引。都内での実費に直結する重要な例外。
+  // 京成: 自社線内で完結するなら第1種・第2種とも距離条件なし。
+  //   他社線への連絡乗車券にする場合のみ通算100km超が条件になるが、
+  //   無料乗車券の利用者は都営線を別に乗るので線内完結として扱ってよい。
+  //   https://www.keisei.co.jp/keisei/tetudou/accessj/goriyo.php
   keisei: "always",
+  // 北総: 「ご本人様単独で乗車する場合、ご本人様に割引乗車券を発売します」。
+  //   第1種・第2種の区別も距離条件もない。
+  //   https://www.hokuso-railway.co.jp/railway/information.html
+  hokuso: "always",
+
+  // 西武だけ基準が50km。都内〜近郊では届かないが、秩父方面なら効く。
+  // https://www.seiburailway.jp/railway/ticket/ticket/discount/
+  seibu: "over50km",
 
   // 以下はいずれも単独乗車だと片道100km(101km)超が条件。都内では割引が効かない。
   jr: "over100km",        // https://www.jreast.co.jp/kippu/yakkan/pdf/disability_discount.pdf
@@ -76,8 +86,7 @@ const DISCOUNT_RULES = {
   keio: "over100km",      // https://www.keio.co.jp/train/ticket/discount/
   // 東急は単独乗車の割引そのものが無い(介護者同伴のみ)。
   // 東急線は最長でも100km未満なので over100km と同じ結果になる。
-  tokyu: "over100km",     // https://www.tokyu.co.jp/railway/ticket/disability/
-  seibu: "over100km"
+  tokyu: "over100km"      // https://www.tokyu.co.jp/railway/ticket/disability/
 };
 
 // 未確認の事業者は over100km(=都内では割引なし)を既定とする。
@@ -122,11 +131,12 @@ function fareForSegment(op, km, opts) {
   if (rule === "always") {
     return { regular, actual: halfFare(regular), note: "手帳提示で半額(自社線内)" };
   }
-  if (km > 100) {
-    return { regular, actual: halfFare(regular), note: "100km超のため半額" };
+  const limit = rule === "over50km" ? 50 : 100;
+  if (km > limit) {
+    return { regular, actual: halfFare(regular), note: limit + "km超のため半額" };
   }
   // ここが都内の移動ではほとんどの会社に当てはまる
-  return { regular, actual: regular, note: "単独乗車・100km以内のため割引なし" };
+  return { regular, actual: regular, note: "単独乗車・" + limit + "km以内のため割引なし" };
 }
 
 // 直線距離(m)の合計から営業キロ(推定)へ

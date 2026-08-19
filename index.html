@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>都営むりょうルート — 無料乗車券で行ける道をさがす</title>
-<meta name="description" content="都営交通無料乗車券をお持ちの方向けの乗換案内。任意の駅から目的の駅まで、都営線をできるだけ使って運賃をおさえる経路を案内します。" />
+<title>都営交通ルート検索</title>
+<meta name="description" content="都営交通を経由した電車の経路と運賃を検索します。任意の駅から目的の駅まで、都営線をできるだけ使う経路を案内します。" />
 <link rel="stylesheet" href="style.css" />
 
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#b6007a" />
+<meta name="theme-color" content="#d02a2b" />
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="むりょうルート" />
+<meta name="apple-mobile-web-app-title" content="都営ルート検索" />
 </head>
 <body>
 
@@ -25,8 +25,14 @@
 </div>
 
 <header class="site-header">
-  <h1>都営むりょうルート</h1>
-  <p class="tagline">都営交通無料乗車券で、どこまで無料で行けるかを調べます</p>
+  <h1>都営交通ルート検索</h1>
+  <p class="tagline">都営交通を経由した電車の経路を検索します</p>
+  <div class="theme-switch" role="group" aria-label="表示色の選択">
+    <span class="sw-label" aria-hidden="true">表示色</span>
+    <button type="button" data-theme-set="default" aria-pressed="true">デフォルト</button>
+    <button type="button" data-theme-set="light" aria-pressed="false">明るい</button>
+    <button type="button" data-theme-set="dark" aria-pressed="false">暗い</button>
+  </div>
 </header>
 
 <main>
@@ -40,6 +46,10 @@
                placeholder="例: 青砥" />
         <p id="fromHelp" class="help">駅名を入力すると候補が出ます</p>
         <ul id="fromList" class="ac-list" role="listbox" aria-label="出発駅の候補" hidden></ul>
+        <div class="saved-row" id="savedFrom" hidden>
+          <span class="saved-label">よく使う駅:</span>
+          <span class="saved-chips"></span>
+        </div>
       </div>
 
       <button type="button" id="swapBtn" class="swap-btn" aria-label="出発駅と到着駅を入れかえる">
@@ -54,8 +64,17 @@
                placeholder="例: 中野坂上" />
         <p id="toHelp" class="help">駅名を入力すると候補が出ます</p>
         <ul id="toList" class="ac-list" role="listbox" aria-label="到着駅の候補" hidden></ul>
+        <div class="saved-row" id="savedTo" hidden>
+          <span class="saved-label">よく使う駅:</span>
+          <span class="saved-chips"></span>
+        </div>
       </div>
     </div>
+
+    <p class="star-hint">
+      <button type="button" id="starBtn" class="star-btn">★ いま入れた2駅をよく使う駅に保存</button>
+      <span class="help">(5駅まで。保存すると下の「ためしに」にも使われます)</span>
+    </p>
 
     <details class="options">
       <summary>手帳の種別を設定する<span class="opt-summary" id="optSummary"></span></summary>
@@ -75,20 +94,25 @@
       </p>
     </details>
 
-    <button type="submit" class="go-btn">経路をさがす</button>
+    <div class="btn-row">
+      <button type="submit" class="go-btn">経路をさがす</button>
+      <button type="button" id="clearBtn" class="clear-btn">クリア</button>
+    </div>
   </form>
 
-  <section id="result" class="result" aria-live="polite" aria-atomic="false">
-    <div class="placeholder">
-      <p>出発駅と到着駅を入れて「経路をさがす」を押してください。</p>
-      <p class="ex">
-        ためしに:
-        <button type="button" class="chip" data-from="青砥" data-to="中野坂上">青砥 → 中野坂上</button>
-        <button type="button" class="chip" data-from="吉祥寺" data-to="浅草">吉祥寺 → 浅草</button>
-        <button type="button" class="chip" data-from="町田" data-to="北千住">町田 → 北千住</button>
-      </p>
-    </div>
+  <section class="tryout" aria-labelledby="tryHead">
+    <h2 id="tryHead" class="try-head">ためしに</h2>
+    <p class="ex" id="exampleRow"></p>
+    <button type="button" id="reshuffleBtn" class="reshuffle">別の例を出す</button>
   </section>
+
+  <section class="history" id="historySec" aria-labelledby="histHead" hidden>
+    <h2 id="histHead" class="try-head">さっき調べた経路</h2>
+    <ul class="hist-list" id="historyList"></ul>
+    <button type="button" id="histClearBtn" class="reshuffle">履歴を消す</button>
+  </section>
+
+  <section id="result" class="result" aria-live="polite" aria-atomic="false"></section>
 </main>
 
 <footer class="site-footer">
@@ -116,8 +140,22 @@
     ホーム画面に追加しておくとアプリのように使えます
     (iPhoneはSafariの共有ボタン →「ホーム画面に追加」、Androidはメニュー →「アプリをインストール」)。
   </p>
+  <h2>免責事項</h2>
+  <ol class="terms">
+    <li>本サービスが表示する経路・運賃・所要時間は<strong>目安</strong>であり、
+      正確性・完全性を保証するものではありません。運賃は駅の位置から距離を推定して
+      各社の運賃表にあてはめた概算です。</li>
+    <li>障害者割引が実際に適用されるかどうかは、<strong>各鉄道事業者の規程と窓口の判断</strong>によります。
+      本サービスの表示を理由に割引を求めることはできません。</li>
+    <li>時刻表・遅延・運休・工事等の運行情報は扱っていません。
+      お出かけの前に各社の最新情報をご確認ください。</li>
+    <li>本サービスの利用によって生じた損害について、
+      提供者は<strong>一切の責任を負いません</strong>。最終的な判断はご自身で行ってください。</li>
+    <li>本サービスは予告なく内容の変更・提供の中断・終了を行うことがあります。</li>
+    <li>誤りにお気づきの際はご連絡いただけると助かります。確認のうえ修正します。</li>
+  </ol>
   <p class="src">
-    時刻・運行状況は扱いません。駅データ出典: <a href="https://ekidata.jp/" target="_blank" rel="noopener">駅データ.jp</a>
+    駅データ出典: <a href="https://ekidata.jp/" target="_blank" rel="noopener">駅データ.jp</a>
     / 対象範囲: 東京・神奈川・埼玉・千葉の鉄道130路線
     / データ作成日: <span id="dataDate">—</span>
   </p>

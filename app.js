@@ -15,6 +15,42 @@ let selected = { from: null, to: null };
 const $ = (id) => document.getElementById(id);
 const resultEl = $("result");
 
+// --- 端末に残しておく設定(表示色・よく使う駅・履歴) ------------------------
+// すべて端末の中だけに保存する。外部には送らない。
+const store = {
+  get(key, fallback) {
+    try {
+      const v = localStorage.getItem("toei-" + key);
+      return v === null ? fallback : JSON.parse(v);
+    } catch (e) { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem("toei-" + key, JSON.stringify(value)); } catch (e) { /* 無視 */ }
+  }
+};
+
+const MAX_SAVED = 5;    // よく使う駅
+const MAX_HISTORY = 10; // 検索履歴
+
+// --- 表示色の切り替え ------------------------------------------------------
+// 3種類から選ぶ。選んだものは次回も引き継ぐ。
+// データ読み込みを待たずに効かせたいので、ここで先に設定する。
+(function setupTheme() {
+  const apply = (mode) => {
+    document.documentElement.setAttribute("data-theme", mode);
+    document.querySelectorAll("[data-theme-set]").forEach((b) => {
+      b.setAttribute("aria-pressed", b.dataset.themeSet === mode ? "true" : "false");
+    });
+  };
+  apply(store.get("theme", "default"));
+  document.querySelectorAll("[data-theme-set]").forEach((b) => {
+    b.addEventListener("click", () => {
+      apply(b.dataset.themeSet);
+      store.set("theme", b.dataset.themeSet);
+    });
+  });
+})();
+
 // --- 起動 -----------------------------------------------------------------
 fetch("network.json")
   .then((r) => {
@@ -29,6 +65,9 @@ fetch("network.json")
       c.addEventListener("click", () => runExample(c.dataset.from, c.dataset.to));
     });
     updateOptSummary();
+    renderSaved();
+    renderHistory();
+    renderExamples();
     if (raw.generated) $("dataDate").textContent = raw.generated;
     applyUrlQuery();
   })
@@ -169,6 +208,39 @@ document.querySelectorAll('input[name="kind"], #companion').forEach((el) => {
   el.addEventListener("change", updateOptSummary);
 });
 
+$("clearBtn").addEventListener("click", () => {
+  $("fromInput").value = "";
+  $("toInput").value = "";
+  selected.from = selected.to = null;
+  resultEl.innerHTML = "";
+  history.replaceState(null, "", location.pathname);
+  $("fromInput").focus();
+});
+
+$("reshuffleBtn").addEventListener("click", renderExamples);
+
+$("histClearBtn").addEventListener("click", () => {
+  store.set("history", []);
+  renderHistory();
+});
+
+$("starBtn").addEventListener("click", () => {
+  const from = resolve("from", $("fromInput"));
+  const to = resolve("to", $("toInput"));
+  if (!from && !to) {
+    $("starBtn").textContent = "★ 先に駅を入れてください";
+    setTimeout(() => { $("starBtn").textContent = "★ いま入れた2駅をよく使う駅に保存"; }, 1800);
+    return;
+  }
+  // 到着駅を先に入れると、次回リストの先頭に出発駅が来て使いやすい
+  if (to) addSavedStation(to.name);
+  if (from) addSavedStation(from.name);
+  renderSaved();
+  renderExamples();
+  $("starBtn").textContent = "★ 保存しました";
+  setTimeout(() => { $("starBtn").textContent = "★ いま入れた2駅をよく使う駅に保存"; }, 1800);
+});
+
 function currentOpts() {
   return {
     kind: document.querySelector('input[name="kind"]:checked').value,
@@ -187,6 +259,147 @@ function runExample(from, to) {
   $("toInput").value = to;
   selected.from = selected.to = null;
   $("searchForm").requestSubmit();
+}
+
+// --- よく使う駅(最大5) -----------------------------------------------------
+function savedStations() { return store.get("stations", []); }
+
+function addSavedStation(name) {
+  const list = savedStations().filter((n) => n !== name);
+  list.unshift(name);
+  store.set("stations", list.slice(0, MAX_SAVED));
+}
+
+function renderSaved() {
+  const list = savedStations();
+  for (const [boxId, inputId] of [["savedFrom", "fromInput"], ["savedTo", "toInput"]]) {
+    const box = $(boxId);
+    box.hidden = list.length === 0;
+    const wrap = box.querySelector(".saved-chips");
+    wrap.innerHTML = "";
+    for (const name of list) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip small";
+      b.textContent = name;
+      b.addEventListener("click", () => {
+        $(inputId).value = name;
+        selected[inputId === "fromInput" ? "from" : "to"] = null;
+        $(inputId).focus();
+      });
+      wrap.appendChild(b);
+    }
+    // 保存を取り消せるようにしておく
+    if (list.length) {
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "chip small ghost";
+      del.textContent = "×消す";
+      del.setAttribute("aria-label", "よく使う駅をすべて消す");
+      del.addEventListener("click", () => { store.set("stations", []); renderSaved(); renderExamples(); });
+      wrap.appendChild(del);
+    }
+  }
+}
+
+// --- 検索履歴(最大10) ------------------------------------------------------
+function addHistory(fromName, toName) {
+  const key = fromName + "→" + toName;
+  const list = store.get("history", []).filter((h) => h.key !== key);
+  list.unshift({ key, from: fromName, to: toName });
+  store.set("history", list.slice(0, MAX_HISTORY));
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = store.get("history", []);
+  $("historySec").hidden = list.length === 0;
+  const ul = $("historyList");
+  ul.innerHTML = "";
+  for (const h of list) {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = h.from + " → " + h.to;
+    // 押したらフォームに入れて、そのまま検索する
+    b.addEventListener("click", () => runExample(h.from, h.to));
+    li.appendChild(b);
+    ul.appendChild(li);
+  }
+}
+
+// --- 「ためしに」の例 ------------------------------------------------------
+// 保存した駅があればそれを使う。無ければ固定の例を出す。
+// この2駅はNPOの活動範囲に合わせたもので、変えたければここを直す。
+const HOME_STATION = "青砥";
+const HUB_STATION = "秋葉原";
+const FALLBACK_EXAMPLES = [
+  ["青砥", "中野坂上"], ["吉祥寺", "浅草"], ["町田", "北千住"]
+];
+
+const CHEAP_ENOUGH = 300;   // これ以下なら「気軽に行ける」とみなす目安(円)
+const PICK_TRIES = 6;
+
+// 都営線が通っている駅からランダムに選び、実際に運賃を計算して安いものを採る。
+// ここを「2路線以上の駅から均等」にすると、片道800円かかる遠い駅が普通に出てしまう。
+// 外出のきっかけとして出す以上、行ける見込みのある額でなければ意味がない。
+function pickCheapPartner(fixedId, fixedIsOrigin) {
+  const pool = [...net.freeStations];
+  let best = null;
+  for (let i = 0; i < PICK_TRIES; i++) {
+    const id = pool[Math.floor(Math.random() * pool.length)];
+    if (id === fixedId) continue;
+    const [a, b] = fixedIsOrigin ? [fixedId, id] : [id, fixedId];
+    const plan = planRoutes(net, a, b, currentOpts());
+    if (!plan.options.length) continue;
+    const fare = plan.options[0].totalActual;
+    if (!best || fare < best.fare) best = { id, fare };
+    if (fare <= CHEAP_ENOUGH) break;
+  }
+  return best;
+}
+
+function stationIdByName(name) {
+  const hit = net.search(name, 1);
+  return hit.length ? hit[0].station.id : null;
+}
+
+function exampleChip(fromName, toName, fare) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "chip";
+  b.innerHTML = esc(fromName) + " → " + esc(toName) +
+    (fare === null ? "" : ` <span class="chip-fare${fare === 0 ? " zero" : ""}">${fare}円</span>`);
+  b.addEventListener("click", () => runExample(fromName, toName));
+  return b;
+}
+
+function renderExamples() {
+  const row = $("exampleRow");
+  row.innerHTML = "";
+  const saved = savedStations();
+
+  if (!saved.length) {
+    for (const [f, t] of FALLBACK_EXAMPLES) row.appendChild(exampleChip(f, t, null));
+    return;
+  }
+
+  // 保存した駅を拠点に、安く行ける先を提案する
+  const mine = saved[Math.floor(Math.random() * saved.length)];
+  const specs = [
+    [mine, true], [HOME_STATION, true], [HUB_STATION, false]
+  ];
+  for (const [name, isOrigin] of specs) {
+    const id = stationIdByName(name);
+    if (id === null) continue;
+    const found = pickCheapPartner(id, isOrigin);
+    if (!found) continue;
+    const other = net.stations.get(found.id).name;
+    row.appendChild(isOrigin
+      ? exampleChip(name, other, found.fare)
+      : exampleChip(other, name, found.fare));
+  }
 }
 
 // ?from=青砥&to=中野坂上 で経路を開ける。
@@ -231,6 +444,7 @@ $("searchForm").addEventListener("submit", (e) => {
   }
   render(from, to, plan);
   pushQuery(from, to);
+  addHistory(from.name, to.name);
   resultEl.querySelector("h2").focus();
 });
 
@@ -337,7 +551,7 @@ function headline(best) {
     `<span class="was">通常 ${best.totalRegular}円</span>` +
     `<span class="arrow" aria-hidden="true">→</span>` +
     `<span class="now">${best.totalActual}円</span>` +
-    (save > 0 ? `<span class="save">${save}円 おトク</span>` : "");
+    (save > 0 ? `<span class="save">${save}円 割引可能</span>` : "");
   box.appendChild(money);
   return box;
 }
@@ -348,9 +562,10 @@ function routeCard(opt, i, total) {
 
   const head = document.createElement("header");
   head.className = "rc-head";
-  const tag = i === 0 ? "いちばん安い" : "比較: 少し速い";
+  const badges = (opt.badges && opt.badges.length ? opt.badges : ["別の経路"])
+    .map((b) => `<span class="rc-tag">${esc(b)}</span>`).join("");
   head.innerHTML =
-    `<span class="rc-tag">${esc(tag)}</span>` +
+    badges +
     `<span class="rc-fare"><b>${opt.totalActual}円</b><span class="rc-was">通常 ${opt.totalRegular}円</span></span>` +
     `<span class="rc-meta">約${opt.time}分 ・ 乗換${opt.transfers}回</span>`;
   card.appendChild(head);
@@ -360,7 +575,7 @@ function routeCard(opt, i, total) {
   if (total > 1 && i === 0) {
     const p = document.createElement("p");
     p.className = "rc-hint";
-    p.textContent = "↓ 下は、お金はかかるけれど速い経路です。";
+    p.textContent = "↓ 下は、運賃はかかるけれど速い経路や、乗換の少ない経路です。";
     card.appendChild(p);
   }
   return card;
@@ -448,15 +663,47 @@ function rideNode(leg) {
         `<small>${g.actual === g.regular ? esc(g.note || "割引なし") : "通常" + g.regular + "円 → " + esc(g.note || "半額")}</small></span>`;
   }
 
+  // 途中の駅を開いて確かめられるようにする。
+  // 他の乗換案内と経路が違っても、通る駅が分かれば不安にならずに済む。
+  const mid = leg.path.slice(1, -1);
+  const listId = "stops-" + (++stopListSeq);
+  const toggle = mid.length
+    ? `<button type="button" class="tl-toggle" aria-expanded="false" aria-controls="${listId}">` +
+      `<span class="tl-stops">${stops}駅</span>` +
+      `<span class="tl-caret" aria-hidden="true">▾</span>` +
+      `<span class="sr-only">途中の駅を表示</span></button>`
+    : `<span class="tl-stops">${stops}駅</span>`;
+
   li.innerHTML =
     `<span class="tl-bar" aria-hidden="true"></span>` +
     `<span class="tl-line">${esc(lineName)}</span>` +
-    `<span class="tl-stops">${stops}駅</span>` +
+    toggle +
     fare +
     (isFareHead && g.legs.length > 1
       ? `<span class="tl-through">${esc(net.operators[g.op].name)}線内は通し運賃</span>` : "");
+
+  if (mid.length) {
+    const ol = document.createElement("ol");
+    ol.className = "tl-midstops";
+    ol.id = listId;
+    ol.hidden = true;
+    for (const s of mid) {
+      const item = document.createElement("li");
+      item.textContent = net.labelOf(s, leg.line);
+      ol.appendChild(item);
+    }
+    li.appendChild(ol);
+    const btn = li.querySelector(".tl-toggle");
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      ol.hidden = open;
+    });
+  }
   return li;
 }
+
+let stopListSeq = 0;
 
 function walkNode(leg) {
   const li = document.createElement("li");

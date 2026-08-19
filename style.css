@@ -2,9 +2,39 @@
    利用者に障害のある方を想定しているため、文字は大きめ、
    タップ領域は44px以上、色だけに頼らない表示を基本にする。 */
 
-:root {
-  --toei: #b6007a;
-  --toei-dark: #8f0060;
+/* 表示色は3種類。既定は「デフォルト」で、ヘッダを塗りつぶさず赤の文字と線で見せる。
+   赤ベタ+白抜きは面積が大きいとまぶしいため、塗りつぶしは「明るい」を選んだときだけにする。 */
+:root, :root[data-theme="default"] {
+  --brand: #d02a2b;          /* RayVの赤 */
+  --brand-dark: #a81f20;
+  --free: #0a7d3f;
+  --free-bg: #eef7f1;
+  --bg: #fbfbfc;
+  --card: #fff;
+  --text: #1a1d21;
+  --muted: #5b6470;
+  --line: #dcdfe4;
+  --danger: #b3261e;
+  --focus: #0060df;
+  --radius: 12px;
+  /* ヘッダ: 塗りつぶさず、白地に赤文字と赤い下線 */
+  --head-bg: #fff;
+  --head-text: #d02a2b;
+  --head-sub: #6a7280;
+  --head-border: #d02a2b;
+  --sw-bg: rgba(208, 42, 43, .08);
+  --sw-border: rgba(208, 42, 43, .45);
+  --sw-text: #d02a2b;
+  --sw-on-bg: #d02a2b;
+  --sw-on-text: #fff;
+  --on-brand: #fff;
+  --on-free: #fff;
+}
+
+/* 明るい: ヘッダを赤で塗りつぶし、白抜き文字にする */
+:root[data-theme="light"] {
+  --brand: #d02a2b;
+  --brand-dark: #a81f20;
   --free: #0a7d3f;
   --free-bg: #e8f6ee;
   --bg: #f4f5f7;
@@ -14,19 +44,52 @@
   --line: #d8dce2;
   --danger: #b3261e;
   --focus: #0060df;
-  --radius: 12px;
+  --head-bg: #d02a2b;
+  --head-text: #fff;
+  --head-sub: rgba(255, 255, 255, .92);
+  --head-border: transparent;
+  --sw-bg: rgba(255, 255, 255, .18);
+  --sw-border: rgba(255, 255, 255, .5);
+  --sw-text: #fff;
+  --sw-on-bg: #fff;
+  --sw-on-text: #d02a2b;
+  --on-brand: #fff;
+  --on-free: #fff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --toei: #ff5fb4; --toei-dark: #ff8ac9;
-    --free: #4ade80; --free-bg: #10291b;
-    --bg: #14161a; --card: #1e2127; --text: #e9ecf1;
-    --muted: #a3adba; --line: #333944; --danger: #ff8a80; --focus: #7cb7ff;
-  }
+/* 暗い: 目が疲れにくいよう彩度を落とし、赤も明るめにして読みやすくする */
+:root[data-theme="dark"] {
+  --brand: #ff6b6c;
+  --brand-dark: #ff8f90;
+  --free: #4ade80;
+  --free-bg: #10291b;
+  --bg: #14161a;
+  --card: #1e2127;
+  --text: #e9ecf1;
+  --muted: #a3adba;
+  --line: #333944;
+  --danger: #ff8a80;
+  --focus: #7cb7ff;
+  --head-bg: #1e2127;
+  --head-text: #ff6b6c;
+  --head-sub: #a3adba;
+  --head-border: #ff6b6c;
+  --sw-bg: rgba(255, 107, 108, .12);
+  --sw-border: rgba(255, 107, 108, .5);
+  --sw-text: #ff6b6c;
+  --sw-on-bg: #ff6b6c;
+  --sw-on-text: #14161a;
+  /* 明るい赤・緑の上は、白抜きだと読みにくいので地の色を載せる */
+  --on-brand: #14161a;
+  --on-free: #14161a;
 }
 
 * { box-sizing: border-box; }
+
+/* display: flex などを指定した要素では、ブラウザ標準の [hidden]{display:none} が
+   詳細度で負けて効かなくなる。hidden を付けたら必ず消えるようにしておく。
+   (これを入れる前は「新しいデータがあります」の帯が常時出てしまっていた) */
+[hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -69,13 +132,14 @@ body {
 
 /* --- ヘッダ --- */
 .site-header {
-  background: var(--toei);
-  color: #fff;
-  padding: 22px 16px 20px;
+  background: var(--head-bg);
+  color: var(--head-text);
+  padding: 20px 16px 16px;
   text-align: center;
+  border-bottom: 3px solid var(--head-border);
 }
 .site-header h1 { margin: 0; font-size: 1.5rem; letter-spacing: .02em; }
-.tagline { margin: 6px 0 0; font-size: .92rem; opacity: .95; }
+.tagline { margin: 6px 0 0; font-size: .92rem; color: var(--head-sub); }
 
 main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 
@@ -144,7 +208,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 }
 .badge.free {
   justify-self: start;
-  background: var(--free); color: #fff;
+  background: var(--free); color: var(--on-free);
   font-size: .68rem; font-weight: 700;
   padding: 1px 7px; border-radius: 20px;
 }
@@ -156,7 +220,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   border: 2px solid var(--line); border-radius: 50%;
   background: var(--card); color: var(--text); cursor: pointer;
 }
-.swap-btn:hover { border-color: var(--toei); color: var(--toei); }
+.swap-btn:hover { border-color: var(--brand); color: var(--brand); }
 
 .options { margin: 16px 0 4px; border-top: 1px solid var(--line); padding-top: 12px; }
 .options summary { cursor: pointer; font-size: .92rem; min-height: 32px; padding: 4px 0; }
@@ -167,35 +231,85 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   display: flex; align-items: center; gap: 9px;
   min-height: 44px; font-size: .95rem; cursor: pointer;
 }
-.radio input, .check input { width: 20px; height: 20px; accent-color: var(--toei); }
+.radio input, .check input { width: 20px; height: 20px; accent-color: var(--brand); }
 
 .go-btn {
   width: 100%; margin-top: 14px;
   min-height: 56px; padding: 14px;
   font-size: 1.12rem; font-weight: 700;
-  background: var(--toei); color: #fff;
+  background: var(--brand); color: var(--on-brand);
   border: none; border-radius: 10px; cursor: pointer;
 }
-.go-btn:hover { background: var(--toei-dark); }
+.go-btn:hover { background: var(--brand-dark); }
 
 /* --- 結果 --- */
 .result { margin-top: 22px; }
 .res-title { font-size: 1.22rem; margin: 0 0 12px; }
 
-.placeholder {
-  background: var(--card); border: 1px dashed var(--line);
-  border-radius: var(--radius); padding: 18px 16px;
-  color: var(--muted); font-size: .95rem;
+/* --- ためしに / 履歴 --- */
+.tryout, .history {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px;
+  margin-top: 16px;
 }
-.placeholder p { margin: 0 0 10px; }
-.ex { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 !important; }
+.try-head { font-size: .95rem; margin: 0 0 9px; color: var(--text); }
+.ex { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
 .chip {
   min-height: 40px; padding: 7px 14px;
   border: 2px solid var(--line); border-radius: 20px;
   background: var(--card); color: var(--text);
   font-size: .88rem; cursor: pointer;
 }
-.chip:hover { border-color: var(--toei); color: var(--toei); }
+.chip:hover { border-color: var(--brand); color: var(--brand); }
+.chip.small { min-height: 34px; padding: 4px 11px; font-size: .82rem; border-width: 1px; }
+.chip.ghost { color: var(--muted); border-style: dashed; }
+
+.reshuffle {
+  min-height: 34px; padding: 4px 12px;
+  background: none; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 8px;
+  font-size: .8rem; cursor: pointer;
+}
+.reshuffle:hover { border-color: var(--brand); color: var(--brand); }
+
+.hist-list {
+  list-style: none; margin: 0 0 10px; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.hist-list li { margin: 0; }
+
+/* --- よく使う駅 --- */
+.saved-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin-top: 7px;
+}
+.saved-label { font-size: .76rem; color: var(--muted); }
+.saved-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.star-hint { margin: 12px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.star-btn {
+  min-height: 40px; padding: 6px 14px;
+  background: none; color: var(--brand);
+  border: 1px solid var(--brand); border-radius: 8px;
+  font-size: .84rem; cursor: pointer;
+}
+.star-btn:hover { background: var(--free-bg); }
+.star-hint .help { margin: 0; }
+
+/* --- 検索ボタンの並び --- */
+.btn-row { display: flex; gap: 10px; margin-top: 14px; }
+.btn-row .go-btn { margin-top: 0; flex: 1; }
+.clear-btn {
+  min-height: 56px; padding: 14px 20px;
+  background: var(--card); color: var(--muted);
+  border: 2px solid var(--line); border-radius: 10px;
+  font-size: .95rem; cursor: pointer; white-space: nowrap;
+}
+.clear-btn:hover { border-color: var(--brand); color: var(--brand); }
+
+/* --- 免責事項 --- */
+.terms { margin: 0 0 12px; padding-left: 1.3em; font-size: .82rem; }
+.terms li { margin-bottom: 6px; }
 
 .error-box {
   background: var(--card); border-left: 6px solid var(--danger);
@@ -232,7 +346,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .now { font-size: 1.7rem; font-weight: 800; color: var(--free); }
 .headline.nofree .now { color: var(--text); }
 .save {
-  background: var(--free); color: #fff;
+  background: var(--free); color: var(--on-free);
   font-size: .8rem; font-weight: 700;
   padding: 3px 11px; border-radius: 20px;
 }
@@ -245,7 +359,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   padding: 14px 16px 8px;
   margin-bottom: 16px;
 }
-.route-card.primary { border-color: var(--toei); border-width: 2px; }
+.route-card.primary { border-color: var(--brand); border-width: 2px; }
 
 .rc-head {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;
@@ -253,15 +367,16 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   border-bottom: 1px solid var(--line);
 }
 .rc-tag {
-  background: var(--toei); color: #fff;
+  background: var(--brand); color: var(--on-brand);
   font-size: .76rem; font-weight: 700;
   padding: 3px 10px; border-radius: 20px;
 }
-.route-card:not(.primary) .rc-tag { background: var(--muted); }
+.route-card:not(.primary) .rc-tag { background: var(--muted); color: var(--card); }
 .rc-fare { font-size: .84rem; color: var(--muted); }
 .rc-fare b { font-size: 1.32rem; color: var(--text); margin-right: 6px; }
 .rc-was { text-decoration: line-through; }
-.rc-meta { margin-left: auto; font-size: .86rem; color: var(--muted); }
+/* 所要時間と乗換回数は、運賃と同じくらい判断の材料になるので同じ大きさで出す */
+.rc-meta { margin-left: auto; font-size: 1.32rem; color: var(--text); }
 .rc-hint { font-size: .82rem; color: var(--muted); margin: 2px 0 6px; }
 
 /* --- 経路のタイムライン --- */
@@ -286,7 +401,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .tl-flag {
   font-size: .74rem; font-weight: 700;
   padding: 2px 9px; border-radius: 20px;
-  background: var(--free); color: #fff;
+  background: var(--free); color: var(--on-free);
 }
 /* 改札を出て歩くような乗換の注意。色だけでなく文言でも伝える */
 .tl-hard {
@@ -297,7 +412,12 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   padding: 3px 9px;
 }
 @media (prefers-color-scheme: dark) {
-  .tl-hard { color: #ffcf8a; background: #2e2210; border-color: #7a5a20; }
+  :root:not([data-theme="light"]) .tl-hard {
+    color: #ffcf8a; background: #2e2210; border-color: #7a5a20;
+  }
+}
+:root[data-theme="dark"] .tl-hard {
+  color: #ffcf8a; background: #2e2210; border-color: #7a5a20;
 }
 
 /* 乗車区間 */
@@ -318,10 +438,11 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 }
 .tl-line { font-weight: 700; font-size: .96rem; }
 .tl-ride .tl-line { color: var(--line-color); }
+/* 濃い路線色は暗い背景で読みにくいので、暗い配色のときは文字を地の色にする */
 @media (prefers-color-scheme: dark) {
-  /* 濃い路線色は暗い背景で読みにくいので、文字は地の色にする */
-  .tl-ride .tl-line { color: var(--text); }
+  :root:not([data-theme="light"]) .tl-ride .tl-line { color: var(--text); }
 }
+:root[data-theme="dark"] .tl-ride .tl-line { color: var(--text); }
 .tl-stops { font-size: .84rem; color: var(--muted); }
 .tl-through { font-size: .74rem; color: var(--muted); width: 100%; }
 
@@ -349,4 +470,59 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* --- 途中の停車駅(たたんで表示) --- */
+.tl-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-height: 32px; padding: 2px 8px;
+  background: none; border: 1px solid var(--line); border-radius: 14px;
+  color: var(--muted); font: inherit; cursor: pointer;
+}
+.tl-toggle:hover { border-color: var(--brand); color: var(--brand); }
+.tl-toggle .tl-stops { color: inherit; }
+.tl-caret { font-size: .7rem; transition: transform .15s; }
+.tl-toggle[aria-expanded="true"] .tl-caret { transform: rotate(180deg); }
+
+.tl-midstops {
+  width: 100%; margin: 6px 0 0; padding: 8px 12px;
+  list-style: none;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  font-size: .88rem; color: var(--muted);
+}
+.tl-midstops li { padding: 3px 0; }
+.tl-midstops li + li { border-top: 1px dotted var(--line); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* --- 表示色の切り替え --- */
+.theme-switch {
+  display: flex; gap: 6px; justify-content: center; align-items: center;
+  flex-wrap: wrap; margin-top: 12px;
+}
+.theme-switch .sw-label {
+  font-size: .78rem; color: var(--head-sub); margin-right: 2px;
+}
+.theme-switch button {
+  min-height: 34px; padding: 4px 14px;
+  background: var(--sw-bg); color: var(--sw-text);
+  border: 1px solid var(--sw-border); border-radius: 16px;
+  font-size: .8rem; cursor: pointer;
+}
+.theme-switch button[aria-pressed="true"] {
+  background: var(--sw-on-bg); color: var(--sw-on-text); font-weight: 700;
+}
+
+/* 「ためしに」に出す運賃。0円は目立たせて、まず無料で行ける先が目に入るようにする */
+.chip-fare {
+  font-size: .78rem; font-weight: 700;
+  color: var(--muted); margin-left: 4px;
+}
+.chip-fare.zero {
+  color: var(--on-free); background: var(--free);
+  padding: 1px 7px; border-radius: 10px;
 }

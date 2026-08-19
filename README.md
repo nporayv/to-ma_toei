@@ -1,4 +1,4 @@
-# 都営むりょうルート
+# 都営交通ルート検索
 
 都営交通無料乗車券をお持ちの方のための乗換案内です。
 
@@ -31,6 +31,8 @@
 |---|---|---|
 | 都営地下鉄・都電・日暮里舎人ライナー | **無料**(無料乗車券) | [交通局](https://www.kotsu.metro.tokyo.jp/other/kanren/fare/free.html) |
 | 京成電鉄 | **距離条件なしで5割引**(自社線内完結の場合) | [京成](https://www.keisei.co.jp/keisei/tetudou/accessj/goriyo.php) |
+| 北総鉄道 | **距離条件なしで5割引**(第1種・第2種とも) | [北総](https://www.hokuso-railway.co.jp/railway/information.html) |
+| 西武鉄道 | 自社線内**50km超**のみ5割引 | [西武](https://www.seiburailway.jp/railway/ticket/ticket/discount/) |
 | 東京メトロ | 101km以上のみ5割引 | [メトロ](https://www.tokyometro.jp/ticket/guide/disability/index.html) |
 | JR東日本 | 100km超のみ5割引 | [JR東日本](https://www.jreast.co.jp/kippu/yakkan/pdf/disability_discount.pdf) |
 | 東急電鉄 | 割引なし(介護者同伴時のみ5割引) | [東急](https://www.tokyu.co.jp/railway/ticket/disability/) |
@@ -43,6 +45,7 @@
 第1種で介護者と同時に乗車する場合は、どの社も距離条件なしで本人・介護者とも5割引です。
 第2種の介護者は割引対象外です(東京メトロは「適用されません」と明記)。
 
+割引がきくのは実質**京成グループ(京成・北総)**だけで、西武が50km超という中間的な基準を持ちます。
 このため **「他社線は割引がきかない前提で、都営線をどれだけ使えるか」** が
 運賃を決めます。画面には区間ごとに「単独乗車・100km以内のため割引なし」のように
 理由を出しています。理由が分からないと、窓口で割引を求めて困ることになるためです。
