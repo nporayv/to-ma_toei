@@ -61,12 +61,60 @@ const CASES = [
       source: "Navitime 2026-08-25"
     }
   },
-  { from: "松戸", to: "ユーカリヶ丘", note: "need Navitime" },
-  { from: "新宿", to: "生田", note: "need Navitime" },
-  { from: "横浜", to: "舞浜", note: "need Navitime" },
-  { from: "強羅", to: "京成立石", note: "need Navitime" },
-  { from: "京成八幡", to: "蒲田", note: "need Navitime" },
-  { from: "渋谷", to: "四ツ木", note: "need Navitime" }
+  {
+    from: "松戸", to: "ユーカリヶ丘",
+    expected: {
+      regular: 710, free: 710,
+      per: [["jr", 200], ["keisei", 510]],
+      note: "JR常磐線 松戸→金町 / 京成金町線・本線 金町→(高砂)→八千代台→ユーカリが丘",
+      source: "Navitime 2026-08-25"
+    }
+  },
+  {
+    from: "新宿", to: "生田",
+    expected: {
+      regular: 300, free: 300,
+      per: [["odakyu", 300]],
+      note: "小田急小田原線急行・各停 新宿→成城学園前→生田",
+      source: "Navitime 2026-08-25"
+    }
+  },
+  {
+    from: "横浜", to: "舞浜",
+    expected: {
+      regular: 790, free: 570,
+      per: [["tokyu", 310], ["toei", 220], ["jr", 260]],
+      note: "東急東横線 横浜→武蔵小杉 / 東急目黒線 武蔵小杉→(直通)目黒 / 都営三田線 目黒→日比谷 / JR武蔵野線 東京→舞浜",
+      source: "Navitime 2026-08-25"
+    }
+  },
+  {
+    from: "強羅", to: "京成立石",
+    expected: {
+      regular: 2240, free: 1890,
+      per: [["other", 770], ["odakyu", 910], ["jr", 210], ["toei", 180], ["keisei", 170]],
+      note: "箱根登山線 強羅→小田原 / 小田急 小田原→新宿 / JR中央線 新宿→御茶ノ水 / JR中央総武線 御茶ノ水→浅草橋 / 都営浅草線 浅草橋→(直通)押上 / 京成押上線 押上→京成立石",
+      source: "Navitime 2026-08-25"
+    }
+  },
+  {
+    from: "京成八幡", to: "蒲田",
+    expected: {
+      regular: 680, free: 350,
+      per: [["toei", 330], ["jr", 350]],
+      note: "都営新宿線 本八幡→馬喰横山 / JR総武線快速・横須賀線 馬喰町→(直通)東京→品川 / JR京浜東北・根岸線 品川→蒲田",
+      source: "Navitime 2026-08-25"
+    }
+  },
+  {
+    from: "渋谷", to: "四ツ木",
+    expected: {
+      regular: 500, free: 170,
+      per: [["metro", 170], ["toei", 330], ["keisei", 170]],
+      note: "東京メトロ銀座線 渋谷→日本橋 / 都営浅草線 日本橋→(直通)押上 / 京成押上線 押上→四ツ木",
+      source: "Navitime 2026-08-25"
+    }
+  }
 ];
 
 let ng = 0;
