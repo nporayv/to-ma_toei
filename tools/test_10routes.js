@@ -52,13 +52,13 @@ const CASES = [
       source: "Navitime 2026-08"
     }
   },
-  { from: "渋谷", to: "みなとみらい" },
-  { from: "松戸", to: "ユーカリヶ丘" },
-  { from: "新宿", to: "生田" },
-  { from: "横浜", to: "舞浜" },
-  { from: "強羅", to: "京成立石" },
-  { from: "京成八幡", to: "蒲田" },
-  { from: "渋谷", to: "四ツ木" }
+  { from: "渋谷", to: "みなとみらい", note: "need Navitime" },
+  { from: "松戸", to: "ユーカリヶ丘", note: "need Navitime" },
+  { from: "新宿", to: "生田", note: "need Navitime" },
+  { from: "横浜", to: "舞浜", note: "need Navitime" },
+  { from: "強羅", to: "京成立石", note: "need Navitime" },
+  { from: "京成八幡", to: "蒲田", note: "need Navitime" },
+  { from: "渋谷", to: "四ツ木", note: "need Navitime" }
 ];
 
 let ng = 0;
