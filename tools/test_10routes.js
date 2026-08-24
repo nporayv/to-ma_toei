@@ -19,22 +19,35 @@ const net = new API.Network(JSON.parse(fs.readFileSync(path.join(root, "network.
 const nameOf = (id) => net.stations.get(id).name;
 const lineOf = (id) => (net.lines.get(id) || {}).name || "徒歩";
 
-// 提供された10区間。expected は実際の運賃が判明したら埋める(円)。
+// 提供された10区間。
+// expected は乗換案内の実データ(社ごとの内訳)。分かったものから埋めていく。
+//   regular … 無料乗車券を使わない場合の合計(きっぷ運賃)
+//   free    … 都営ぶんを0円にした場合の合計(このサービスが案内すべき額)
+//   per     … 社ごとのきっぷ運賃。[事業者ID, 円]
 const CASES = [
-  ["流山おおたかの森", "武蔵小杉"],
-  ["北参道", "川崎大師"],
-  ["青砥", "三鷹"],
-  ["渋谷", "みなとみらい"],
-  ["松戸", "ユーカリヶ丘"],
-  ["新宿", "生田"],
-  ["横浜", "舞浜"],
-  ["強羅", "京成立石"],
-  ["京成八幡", "蒲田"],
-  ["渋谷", "四ツ木"]
+  {
+    from: "流山おおたかの森", to: "武蔵小杉",
+    expected: {
+      regular: 1200, free: 920,
+      per: [["tx", 690], ["toei", 280], ["tokyu", 230]],
+      note: "TX 流山おおたかの森→新御徒町 / 都営 新御徒町→(春日)→目黒 / 東急目黒線 目黒→武蔵小杉",
+      source: "乗換案内の検索結果(2026-08)"
+    }
+  },
+  { from: "北参道", to: "川崎大師" },
+  { from: "青砥", to: "三鷹" },
+  { from: "渋谷", to: "みなとみらい" },
+  { from: "松戸", to: "ユーカリヶ丘" },
+  { from: "新宿", to: "生田" },
+  { from: "横浜", to: "舞浜" },
+  { from: "強羅", to: "京成立石" },
+  { from: "京成八幡", to: "蒲田" },
+  { from: "渋谷", to: "四ツ木" }
 ];
 
 let ng = 0;
-CASES.forEach(([fromQ, toQ], i) => {
+CASES.forEach((c, i) => {
+  const { from: fromQ, to: toQ, expected } = c;
   const a = net.search(fromQ, 1), b = net.search(toQ, 1);
   console.log("\n" + "=".repeat(72));
   if (!a.length || !b.length) {
@@ -63,6 +76,29 @@ CASES.forEach(([fromQ, toQ], i) => {
       }
     }
   });
+
+  if (!expected) return;
+  // 実データとの突き合わせ。経路が違えば運賃も違うので、社ごとの額で見比べる。
+  const best = res.options[0];
+  const mine = new Map();
+  for (const g of best.fareGroups) {
+    if (g.walk) continue;
+    mine.set(g.op, (mine.get(g.op) || 0) + g.regular);
+  }
+  console.log(`\n  ―― 実データとの差 (${expected.source})`);
+  console.log(`     ${expected.note}`);
+  for (const [op, yen] of expected.per) {
+    const got = mine.get(op);
+    const name = (net.operators[op] || {}).name || op;
+    if (got == null) { console.log(`     ${name}: 実 ${yen}円 / この経路では通っていない`); continue; }
+    const diff = got - yen;
+    console.log(`     ${name}: 実 ${yen}円 / 見積 ${got}円 ${diff === 0 ? "(一致)" : `(${diff > 0 ? "+" : ""}${diff}円)`}`);
+  }
+  console.log(`     合計(通常): 実 ${expected.regular}円 / 見積 ${best.totalRegular}円`);
+  console.log(`     合計(無料券): 実 ${expected.free}円 / 見積 ${best.totalActual}円`);
+  if (best.totalActual < expected.free) {
+    console.log(`     ★ ${expected.free - best.totalActual}円 安く見積もっている(利用者が改札で足りなくなる向き)`);
+  }
 });
 
 console.log("\n" + "=".repeat(72));
