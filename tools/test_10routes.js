@@ -52,7 +52,15 @@ const CASES = [
       source: "Navitime 2026-08"
     }
   },
-  { from: "渋谷", to: "みなとみらい", note: "need Navitime" },
+  {
+    from: "渋谷", to: "みなとみらい",
+    expected: {
+      regular: 510, free: 510,
+      per: [["tokyu", 310], ["mm", 200]],
+      note: "東急東横線急行 渋谷→横浜 / みなとみらい線急行 横浜→みなとみらい (乗換0回・直通)",
+      source: "Navitime 2026-08-25"
+    }
+  },
   { from: "松戸", to: "ユーカリヶ丘", note: "need Navitime" },
   { from: "新宿", to: "生田", note: "need Navitime" },
   { from: "横浜", to: "舞浜", note: "need Navitime" },
