@@ -196,7 +196,9 @@ function normalize(s) {
   return (s || "")
     .trim()
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
-    .replace(/[ｹケ]/g, "ヶ")
+    // 「ヶ/ケ/ヵ/が」の表記ゆれを吸収する。駅データ内でも ユーカリが丘 / 霞ヶ関 /
+    // 阿佐ケ谷 のように混在しているため、検索側・データ側の双方を同じ字に寄せる。
+    .replace(/[ｹケヵヶが]/g, "ヶ")
     .replace(/駅$/, "")
     .toLowerCase();
 }
