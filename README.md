@@ -118,6 +118,8 @@ python tools/build_network.py   # network.json 再生成 + sw.js のVERSION自�
 | `network.json` | 駅・路線データ(生成物) |
 | `tools/build_network.py` | `network.json` を作り直すスクリプト |
 | `tools/test_router.js` | 探索エンジンの動作確認 |
+| `tools/test_10routes.js` | サンプル10区間をまとめて流す |
+| `docs/data-requests.md` | 運賃計算に足りていないデータの一覧 |
 
 ## 経路探索のしくみ
 
