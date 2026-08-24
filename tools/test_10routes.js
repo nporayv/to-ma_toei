@@ -34,8 +34,24 @@ const CASES = [
       source: "乗換案内の検索結果(2026-08)"
     }
   },
-  { from: "北参道", to: "川崎大師" },
-  { from: "青砥", to: "三鷹" },
+  {
+    from: "北参道", to: "川崎大師",
+    expected: {
+      regular: 670, free: 490,
+      per: [["toei", 180], ["jr", 210], ["keikyu", 280]],
+      note: "都営副都心線 北参道→渋谷 / JR山手線 渋谷→品川 / 京浜急行 品川→京急川崎→川崎大師",
+      source: "Navitime 2026-08"
+    }
+  },
+  {
+    from: "青砥", to: "三鷹",
+    expected: {
+      regular: 740, free: 460,
+      per: [["keisei", 200], ["toei", 280], ["jr", 260]],
+      note: "京成押上線 青砥→押上 / 都営浅草線 押上→東日本橋 / 都営新宿線 馬喰横山→新宿 / JR中央線快速 新宿→三鷹",
+      source: "Navitime 2026-08"
+    }
+  },
   { from: "渋谷", to: "みなとみらい" },
   { from: "松戸", to: "ユーカリヶ丘" },
   { from: "新宿", to: "生田" },
