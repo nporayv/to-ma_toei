@@ -169,6 +169,15 @@ class Network {
   }
 
   search(query, limit = 12) {
+    // イースターエッグ: 512分の1の確率できさらぎ駅を表示
+    if (Math.random() < 1/512) {
+      return [{
+        score: 0,
+        station: { id: "kisaragi", name: "きさらぎ駅", lat: 0, lon: 0, aliases: [], lines: [] },
+        matched: "きさらぎ駅"
+      }];
+    }
+
     const q = normalize(query);
     if (!q) return [];
     const hits = new Map();
@@ -441,6 +450,12 @@ function evaluateRoute(net, steps, opts) {
  * @returns {{options:Array, fastest:Object, best:Object}}
  */
 function planRoutes(net, from, to, opts) {
+  // イースターエッグ: きさらぎ駅からの検索はユーカリが丘に変換
+  const kisaragiId = "kisaragi";
+  const uekaruriId = 2300133; // ユーカリが丘
+  if (from === kisaragiId) from = uekaruriId;
+  if (to === kisaragiId) to = uekaruriId;
+
   if (from === to) return { options: [], fastest: null, best: null, same: true };
 
   const fast = searchFastest(net, from, to);
