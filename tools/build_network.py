@@ -26,6 +26,21 @@ import re
 import sys
 import time
 
+# 自動生成では拾えない徒歩連絡を手で足す。
+#
+# 下の徒歩乗換は「駅の位置が400m以内」という機械的な条件で作っている。
+# ところが実際には、少し離れていても日常的に歩かれている乗り継ぎがある。
+# 秋葉原(JR・日比谷線・TX)と岩本町(都営新宿線)は直線415mで、
+# 15m足りずに漏れていた。昭和通りを渡って5〜6分の距離で、実際によく使われる。
+#
+# 閾値そのものを上げると、並行する路線の隣どうし(板橋と北池袋など)まで
+# 「乗り換えられる」ことになってしまうため、必要なものだけここに書く。
+#
+# 書式: (駅ID, 駅ID, 徒歩の距離m)。駅IDは駅データ.jpのもの。
+EXTRA_WALK = [
+    (1130222, 9930408, 450),  # 秋葉原 ↔ 岩本町 (昭和通り経由・実測はおよそ450m)
+]
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
 OUT = os.path.join(PROJECT, "network.json")
@@ -324,6 +339,15 @@ def main():
                     if m <= 400:
                         seen.add(pair)
                         walk.append([pair[0], pair[1], round(m)])
+    for a, b, m in EXTRA_WALK:
+        if str(a) not in groups or str(b) not in groups:
+            log("  ★EXTRA_WALK: 駅ID %d-%d が見つからない" % (a, b))
+            continue
+        if (min(a, b), max(a, b)) in seen or (min(a, b), max(a, b)) in rail_pairs:
+            continue
+        seen.add((min(a, b), max(a, b)))
+        walk.append([min(a, b), max(a, b), m])
+        log("  手動で追加: %s ↔ %s (%dm)" % (groups[str(a)]["name"], groups[str(b)]["name"], m))
     log("徒歩乗換: %d 組" % len(walk))
 
     used = {l["op"] for l in lines_out}
