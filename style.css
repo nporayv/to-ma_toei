@@ -526,3 +526,125 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   color: var(--on-free); background: var(--free);
   padding: 1px 7px; border-radius: 10px;
 }
+
+/* 直通運転の目印。降りる必要がないことを、乗換の印と区別して見せる */
+.tl-through-flag {
+  font-size: .72rem; font-weight: 700;
+  padding: 2px 9px; border-radius: 20px;
+  background: var(--card); color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+/* --- やることの手順 ---
+   数字の「乗換1回」ではなく、どこで降りてどこで乗るかを言葉で示す。
+   行うことがある手順(乗り換え・徒歩)を強く、乗ったままでよい所を弱く見せる。 */
+.steps-box {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 4px 0 14px;
+}
+.steps-head {
+  margin: 0 0 8px; font-size: .92rem; color: var(--text);
+}
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+.step {
+  position: relative;
+  padding: 8px 0 8px 34px;
+  border-bottom: 1px dotted var(--line);
+}
+.step:last-child { border-bottom: none; }
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute; left: 0; top: 9px;
+  width: 24px; height: 24px; line-height: 24px;
+  text-align: center; border-radius: 50%;
+  font-size: .78rem; font-weight: 700;
+  background: var(--line); color: var(--text);
+}
+.step-main { display: block; font-size: .98rem; line-height: 1.55; }
+.step-sub { display: block; font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
+/* 降りて乗り換える手順は、見落とすと困るので目立たせる */
+.step.change, .step.walk {
+  background: #fff4e0; border-radius: 8px;
+  padding-left: 34px; padding-right: 10px;
+  border-bottom: none; margin: 4px 0;
+}
+.step.change::before, .step.walk::before {
+  background: #d97706; color: #fff; left: 6px;
+}
+:root[data-theme="dark"] .step.change,
+:root[data-theme="dark"] .step.walk { background: #2e2210; }
+
+/* 都営線の無料区間に乗る手順 */
+.step.board.free::before { background: var(--free); color: var(--on-free); }
+.step.goal::before { background: var(--text); color: var(--card); }
+
+.steps-note {
+  margin: 8px 0 0; font-size: .78rem; color: var(--muted);
+}
+
+/* --- 検索結果の一覧(目次) --- */
+.route-index {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px;
+}
+.ri-head { margin: 0 0 8px; font-size: .9rem; color: var(--muted); }
+.route-index ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ri-link {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+  min-height: 44px; padding: 7px 12px;
+  border: 1px solid var(--line); border-radius: 9px;
+  text-decoration: none; color: var(--text);
+}
+.ri-link:hover { border-color: var(--brand); background: var(--free-bg); }
+.ri-no {
+  width: 22px; height: 22px; line-height: 22px; text-align: center;
+  border-radius: 50%; background: var(--line);
+  font-size: .76rem; font-weight: 700; flex: none;
+}
+.ri-link.free .ri-no { background: var(--free); color: var(--on-free); }
+.ri-fare { font-size: 1.1rem; font-weight: 700; }
+.ri-meta { font-size: .84rem; color: var(--muted); }
+.ri-tag {
+  margin-left: auto; font-size: .74rem;
+  color: var(--muted); border: 1px solid var(--line);
+  border-radius: 12px; padding: 1px 9px; white-space: nowrap;
+}
+.ri-link.free .ri-tag { color: var(--free); border-color: var(--free); }
+
+/* --- 各経路の都営線の範囲 --- */
+.card-free {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 8px 0 10px; padding: 8px 12px;
+  background: var(--free-bg); border-left: 4px solid var(--free);
+  border-radius: 6px; font-size: .92rem;
+}
+.card-free.none {
+  background: var(--bg); border-left-color: var(--muted); color: var(--muted);
+}
+.cf-zero {
+  font-size: .74rem; font-weight: 700;
+  background: var(--free); color: var(--on-free);
+  padding: 2px 9px; border-radius: 20px;
+}
+
+.back-top {
+  display: inline-block; margin: 6px 0 4px;
+  font-size: .8rem; color: var(--muted); text-decoration: none;
+  min-height: 36px; line-height: 36px;
+}
+.back-top:hover { color: var(--brand); }
+
+.try-note { font-weight: 400; font-size: .8rem; color: var(--muted); }
+
+/* 目次から飛んだとき、見出しが上に隠れないようにする */
+.route-card, .res-title { scroll-margin-top: 12px; }
+
+/* 同じ事業者の2区間目。運賃が抜けたように見えないよう控えめに書く */
+.tl-fare.included {
+  font-weight: 400; font-size: .78rem; color: var(--muted);
+}
