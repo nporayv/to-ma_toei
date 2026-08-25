@@ -52,6 +52,20 @@ TOEI_LINE_OPERATOR = {
     "99342": "toneri",  # 日暮里・舎人ライナー
 }
 
+# 1つの路線の中で運賃の事業者が変わる直通路線は、境界駅で2本に分けて扱う。
+# 分けないと全区間が片方の事業者の運賃になり、実際とかけ離れた額が出る。
+# (例: 相鉄・JR直通線は新宿〜大崎まで含むため、全部を相鉄運賃で計算すると
+#  新宿〜海老名50kmが270円になってしまう)
+SPLIT_LINES = {
+    "29003": {
+        "boundary": "羽沢横浜国大",
+        "parts": [
+            {"suffix": "(JR区間)", "op": "jr"},
+            {"suffix": "(相鉄区間)", "op": "sotetsu"},
+        ],
+    },
+}
+
 COMPANY_OPERATOR = {
     "2": "jr", "11": "tobu", "12": "seibu", "13": "keisei", "14": "keio",
     "15": "odakyu", "16": "tokyu", "17": "keikyu", "18": "metro", "19": "sotetsu",
@@ -116,6 +130,71 @@ def operator_of(line_cd, company_cd):
     if company_cd == FREE_COMPANY:
         return TOEI_LINE_OPERATOR.get(line_cd, "toei")
     return COMPANY_OPERATOR.get(company_cd, "other")
+
+
+def split_line(line, spec, groups, idx):
+    """事業者が変わる直通路線を、境界駅で2本に分ける。
+
+    境界駅は両側に残す(そこで乗り継げるようにするため)。
+    路線IDは元のIDに 1/2 を足して衝突しないようにする。
+    """
+    bname = spec["boundary"]
+    bg = next((g for g in line["stations"] if groups[str(g)]["name"] == bname
+               or groups.get(str(g), {}).get("name") == bname), None)
+    if bg is None:
+        # 境界駅が見つからないときは分けずにそのまま返す(黙って壊れるのを避ける)
+        log("警告: %s の境界駅 %s が見つかりません。分割しませんでした" % (line["name"], bname))
+        return [line]
+
+    # 境界駅を取り除いたときに分かれる2つのかたまりを求める
+    adj = {}
+    for i, j in line["edges"]:
+        a, b = line["stations"][i], line["stations"][j]
+        adj.setdefault(a, []).append(b)
+        adj.setdefault(b, []).append(a)
+
+    seen = {bg}
+    groups_of_stations = []
+    for start in adj.get(bg, []):
+        if start in seen:
+            continue
+        comp, stack = set(), [start]
+        seen.add(start)
+        while stack:
+            c = stack.pop()
+            comp.add(c)
+            for n in adj.get(c, []):
+                if n not in seen:
+                    seen.add(n)
+                    stack.append(n)
+        groups_of_stations.append(comp)
+
+    if len(groups_of_stations) != 2:
+        log("警告: %s を2つに分けられませんでした(%d個)" % (line["name"], len(groups_of_stations)))
+        return [line]
+
+    out = []
+    for n, (comp, part) in enumerate(zip(groups_of_stations, spec["parts"]), start=1):
+        members = comp | {bg}
+        seq = [g for g in line["stations"] if g in members]
+        pos = {g: i for i, g in enumerate(seq)}
+        edges = sorted([pos[line["stations"][i]], pos[line["stations"][j]]]
+                       for i, j in line["edges"]
+                       if line["stations"][i] in members and line["stations"][j] in members)
+        sub = {
+            "id": line["id"] * 10 + n,
+            "name": line["name"] + part["suffix"],
+            "op": part["op"],
+            "color": line["color"],
+            "stations": seq,
+            "edges": edges,
+        }
+        labels = {k: v for k, v in (line.get("labels") or {}).items() if int(k) in members}
+        if labels:
+            sub["labels"] = labels
+        out.append(sub)
+    log("  %s を境界駅 %s で2本に分割しました" % (line["name"], bname))
+    return out
 
 
 def main():
@@ -209,7 +288,11 @@ def main():
                     labels[str(int(g))] = r["station_name"]
         if labels:
             line["labels"] = labels
-        lines_out.append(line)
+
+        if cd in SPLIT_LINES:
+            lines_out.extend(split_line(line, SPLIT_LINES[cd], groups, idx))
+        else:
+            lines_out.append(line)
 
     # 徒歩乗換: 別グループ同士で400m以内、かつ同じ路線で隣接していない組み合わせ
     rail_pairs = set()

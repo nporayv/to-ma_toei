@@ -338,7 +338,7 @@ const FALLBACK_EXAMPLES = [
   ["青砥", "中野坂上"], ["吉祥寺", "浅草"], ["町田", "北千住"]
 ];
 
-const CHEAP_ENOUGH = 300;   // これ以下なら「気軽に行ける」とみなす目安(円)
+const CHEAP_ENOUGH = 500;   // これ以下なら「気軽に行ける」とみなす目安(円)
 const PICK_TRIES = 6;
 
 // 都営線が通っている駅からランダムに選び、実際に運賃を計算して安いものを採る。
@@ -506,12 +506,16 @@ function render(from, to, plan) {
 
   const h2 = document.createElement("h2");
   h2.className = "res-title";
+  h2.id = "resultTop";
   h2.tabIndex = -1;
   h2.textContent = `${from.name} → ${to.name}`;
   resultEl.appendChild(h2);
 
   // いちばん伝えたいこと: 都営線にどこから入るか
   resultEl.appendChild(headline(best));
+
+  // 経路が複数あるときは、先頭に一覧を置いて選べるようにする
+  if (plan.options.length > 1) resultEl.appendChild(routeIndex(plan.options));
 
   plan.options.forEach((opt, i) => {
     resultEl.appendChild(routeCard(opt, i, plan.options.length));
@@ -556,9 +560,62 @@ function headline(best) {
   return box;
 }
 
+// 検索結果の一覧。押すとその経路まで飛ぶ。
+function routeIndex(options) {
+  const nav = document.createElement("nav");
+  nav.className = "route-index";
+  nav.setAttribute("aria-label", "見つかった経路の一覧");
+  const h = document.createElement("h3");
+  h.className = "ri-head";
+  h.textContent = `見つかった経路 ${options.length}件`;
+  nav.appendChild(h);
+
+  const ul = document.createElement("ul");
+  options.forEach((o, i) => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = "#route-" + (i + 1);
+    a.className = "ri-link" + (o.usesFree ? " free" : "");
+    a.innerHTML =
+      `<span class="ri-no">${i + 1}</span>` +
+      `<span class="ri-fare">${o.totalActual}円</span>` +
+      `<span class="ri-meta">約${o.time}分 ・ 乗換${o.transfers}回</span>` +
+      `<span class="ri-tag">${o.usesFree ? "都営線あり" : "都営線なし"}</span>`;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  nav.appendChild(ul);
+  return nav;
+}
+
+// その経路で都営線をどこからどこまで使うか。経路ごとに違うので各カードに出す。
+function freeSpan(opt) {
+  const p = document.createElement("p");
+  if (!opt.usesFree) {
+    p.className = "card-free none";
+    p.textContent = "この経路では都営線を使いません";
+    return p;
+  }
+  p.className = "card-free";
+  const a = net.labelOf(opt.freeEntry, opt.freeEntryLine);
+  const b = net.labelOf(opt.freeExit, opt.freeExitLine);
+  p.innerHTML = `都営線は <b>${esc(a)}</b> から <b>${esc(b)}</b> まで` +
+    `<span class="cf-zero">この区間0円</span>`;
+  return p;
+}
+
+function backToTop() {
+  const a = document.createElement("a");
+  a.href = "#resultTop";
+  a.className = "back-top";
+  a.textContent = "↑ 経路の一覧へ戻る";
+  return a;
+}
+
 function routeCard(opt, i, total) {
   const card = document.createElement("article");
   card.className = "route-card" + (i === 0 ? " primary" : "");
+  card.id = "route-" + (i + 1);
 
   const head = document.createElement("header");
   head.className = "rc-head";
@@ -570,15 +627,103 @@ function routeCard(opt, i, total) {
     `<span class="rc-meta">約${opt.time}分 ・ 乗換${opt.transfers}回</span>`;
   card.appendChild(head);
 
+  card.appendChild(freeSpan(opt));
+  card.appendChild(stepList(opt));
   card.appendChild(timeline(opt));
 
-  if (total > 1 && i === 0) {
-    const p = document.createElement("p");
-    p.className = "rc-hint";
-    p.textContent = "↓ 下は、運賃はかかるけれど速い経路や、乗換の少ない経路です。";
-    card.appendChild(p);
-  }
+  if (total > 1) card.appendChild(backToTop());
   return card;
+}
+
+// --- やることの手順 --------------------------------------------------------
+// 「乗換1回」と数字で言われても、どこで降りればよいかは分からない。
+// このサービスの目的は「どこで乗り換えるか」を確実に伝えることなので、
+// 図の前に、言葉で手順を出す。
+//
+// 直通運転でつながる区間はひとまとめにして「1回の乗車」として扱う。
+// 乗ったままでよい駅を手順に混ぜると、そこで降りるように見えてしまうため。
+function buildRides(opt) {
+  const rides = [];
+  for (const leg of opt.legs) {
+    const last = rides[rides.length - 1];
+    if (leg.walk) { rides.push({ walk: leg }); continue; }
+    if (leg.through && last && !last.walk) { last.legs.push(leg); continue; }
+    rides.push({ legs: [leg] });
+  }
+  return rides;
+}
+
+function lineNameOf(id) { return (net.lines.get(id) || {}).name || ""; }
+
+function stepList(opt) {
+  const rides = buildRides(opt);
+  const ol = document.createElement("ol");
+  ol.className = "steps";
+
+  const add = (kind, main, sub, free) => {
+    const li = document.createElement("li");
+    li.className = "step " + kind + (free ? " free" : "");
+    li.innerHTML = `<span class="step-main">${main}</span>` +
+      (sub ? `<span class="step-sub">${sub}</span>` : "");
+    ol.appendChild(li);
+  };
+
+  rides.forEach((r, i) => {
+    if (r.walk) {
+      const a = net.stations.get(r.walk.path[0]).name;
+      const b = net.stations.get(r.walk.path.slice(-1)[0]).name;
+      const min = Math.round(r.walk.meters / 80 + 3);
+      add("walk", `<b>${esc(a)}</b> で降りて、<b>${esc(b)}</b> まで歩く`,
+        `約${min}分・${Math.round(r.walk.meters)}m。いちど改札を出ます`);
+      return;
+    }
+
+    const first = r.legs[0], last = r.legs[r.legs.length - 1];
+    const board = net.labelOf(first.path[0], first.line);
+    const alight = net.labelOf(last.path.slice(-1)[0], last.line);
+    const allFree = r.legs.every((l) => l.group && l.group.free);
+
+    // 直通で他社線へ乗り入れる場合は、その旨を乗車時に伝える
+    const others = r.legs.slice(1).map((l) => lineNameOf(l.line));
+    const sub = others.length
+      ? `<b>${esc(others[others.length - 1])}</b>へ直通する列車に乗ります。` +
+        `途中で乗り換えず、<b>${esc(alight)}</b> まで乗ったままです`
+      : `<b>${esc(alight)}</b> まで ${r.legs.reduce((n, l) => n + l.path.length - 1, 0)}駅`;
+    add("board", `<b>${esc(board)}</b> で <b>${esc(lineNameOf(first.line))}</b> に乗る`,
+      sub, allFree);
+
+    // 次が乗り換えなら、降りる駅と乗り換え先をここで示す
+    const next = rides[i + 1];
+    if (!next) {
+      add("goal", `<b>${esc(alight)}</b> で降りる`, "到着です");
+    } else if (!next.walk) {
+      const nb = net.labelOf(next.legs[0].path[0], next.legs[0].line);
+      const same = plainName(nb) === plainName(alight);
+      add("change",
+        same
+          ? `<b>${esc(alight)}</b> で <b>${esc(lineNameOf(next.legs[0].line))}</b> に乗り換え`
+          : `<b>${esc(alight)}</b> で降りて、<b>${esc(nb)}</b> へ移動`,
+        same ? "同じ駅の中で乗り換えます" : "駅の中でつながっていますが、少し歩きます");
+    }
+  });
+
+  const box = document.createElement("div");
+  box.className = "steps-box";
+  const h = document.createElement("h4");
+  h.className = "steps-head";
+  const changes = ol.querySelectorAll(".step.change, .step.walk").length;
+  h.textContent = changes === 0 ? "やること(乗り換えなし)" : `やること(乗り換え ${changes} 回)`;
+  box.appendChild(h);
+  box.appendChild(ol);
+
+  // 直通は全列車ではない。時刻表を持っていない以上、ここは正直に断っておく。
+  if (rides.some((r) => !r.walk && r.legs.length > 1)) {
+    const p = document.createElement("p");
+    p.className = "steps-note";
+    p.textContent = "直通列車は本数が限られることがあります。来ない場合は、境界の駅で乗り換えても同じ場所に行けます。";
+    box.appendChild(p);
+  }
+  return box;
 }
 
 function timeline(opt) {
@@ -611,7 +756,8 @@ function timeline(opt) {
     // 括弧の種類だけが違う表記ゆれ(押上〈スカイツリー前〉/押上（スカイツリー前）)は
     // 「〜から乗換」を出しても意味がないので同じ駅名として扱う
     const differs = prevEnd && plainName(prevEnd) !== plainName(startName);
-    tl.appendChild(stopNode(startName, role, differs ? prevEnd : null, mark, hard && hard.note));
+    tl.appendChild(stopNode(startName, role, differs ? prevEnd : null, mark,
+      hard && hard.note, !!leg.through));
 
     // 移動区間
     tl.appendChild(leg.walk ? walkNode(leg) : rideNode(leg));
@@ -627,13 +773,19 @@ function timeline(opt) {
   return tl;
 }
 
-function stopNode(name, role, alsoKnownAs, freeMark, hardNote) {
+function stopNode(name, role, alsoKnownAs, freeMark, hardNote, through) {
   const li = document.createElement("li");
   li.className = "tl-stop" + (role ? " endpoint" : "");
   const dot = `<span class="tl-dot" aria-hidden="true"></span>`;
   let html = `${dot}<span class="tl-name">${esc(name)}</span>`;
   if (role) html += `<span class="tl-role">${esc(role)}</span>`;
-  if (alsoKnownAs) html += `<span class="tl-aka">${esc(alsoKnownAs)}から乗換</span>`;
+  // 直通運転はそのまま乗っていればよい。降りる必要がないことをはっきり出す。
+  if (through) html += `<span class="tl-through-flag">直通・乗り換え不要</span>`;
+  if (alsoKnownAs) {
+    html += through
+      ? `<span class="tl-aka">${esc(alsoKnownAs)}から直通</span>`
+      : `<span class="tl-aka">${esc(alsoKnownAs)}から乗換</span>`;
+  }
   if (freeMark === "enter") html += `<span class="tl-flag enter">ここから都営線・無料</span>`;
   if (freeMark === "exit") html += `<span class="tl-flag exit">ここまで都営線・無料</span>`;
   if (hardNote) html += `<span class="tl-hard">乗換注意: ${esc(hardNote)}</span>`;
@@ -661,6 +813,10 @@ function rideNode(leg) {
       ? `<span class="tl-fare free">0円<small>無料乗車券</small></span>`
       : `<span class="tl-fare${g.actual === g.regular ? " nodisc" : ""}">${g.actual}円` +
         `<small>${g.actual === g.regular ? esc(g.note || "割引なし") : "通常" + g.regular + "円 → " + esc(g.note || "半額")}</small></span>`;
+  } else {
+    // 同じ事業者の2区間目以降は運賃を再掲しない。ただし空欄のままだと
+    // 「運賃が抜け落ちている」ように見えるので、含まれていることを書く。
+    fare = `<span class="tl-fare included">上の運賃に含む</span>`;
   }
 
   // 途中の駅を開いて確かめられるようにする。
