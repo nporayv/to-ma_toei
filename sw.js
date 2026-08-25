@@ -3,7 +3,7 @@
 // ★ 内容を更新したら必ず VERSION を変えること。
 //    VERSION が変わらないと、利用者の端末に古い運賃データが残り続ける。
 //    tools/build_network.py を実行すると、この行は自動で書き換わる。
-const VERSION = "2026-08-23-8";
+const VERSION = "2026-08-25-1";
 
 const CACHE = "toei-muryo-" + VERSION;
 
@@ -15,6 +15,7 @@ const ASSETS = [
   "./fares.js",
   "./router.js",
   "./app.js",
+  "./mshiki.js",
   "./network.json",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
