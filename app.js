@@ -634,6 +634,17 @@ function routeCard(opt, i, total) {
     `<span class="rc-meta">約${opt.time}分 ・ 乗換${opt.transfers}回</span>`;
   card.appendChild(head);
 
+  // 内訳を足すと合わないため、乗継割引が効いていることを明示する。
+  // (東京メトロと都営地下鉄を直接乗り継ぐと、両社の合算から割り引かれる)
+  if (opt.transferDiscount > 0) {
+    const d = document.createElement("p");
+    d.className = "steps-note";
+    d.textContent = "通常運賃には、東京メトロと都営地下鉄の乗継割引 −"
+      + opt.transferDiscount + "円 を含みます。無料乗車券を使う場合はメトロ側を単独で買うため、"
+      + "この割引は効きません。";
+    card.appendChild(d);
+  }
+
   card.appendChild(freeSpan(opt));
   card.appendChild(stepList(opt));
   card.appendChild(timeline(opt));
