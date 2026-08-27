@@ -182,6 +182,37 @@ function fareForSegment(op, km, opts) {
   return { regular, actual: regular, note: "単独乗車・" + limit + "km以内のため割引なし" };
 }
 
+// ---------------------------------------------------------------------------
+// 事業者をまたぐ乗継割引
+//
+// 運賃を事業者ごとに独立して求めて足すと、実際より高く出る組み合わせがある。
+// 東京メトロと都営地下鉄を乗り継ぐ場合、両社の合算から一定額が引かれるため。
+//
+// ★この割引は「通常運賃」にだけ効く。★
+//   都営線の無料乗車券を使う利用者は、メトロ側を単独のきっぷで買う。
+//   メトロ→都営の連絡乗車券ではないので、乗継割引は適用されない。
+//   つまり実費(actual)は変わらず、比較用の基準額(regular)だけが下がる。
+//   ここを取り違えると、実費を安く見せてしまい改札で足りなくなる。
+//
+// 金額について:
+//   公表されている乗継割引額は大人70円(連絡乗車券、またはICで60分以内の乗継)。
+//   ただし舞浜→押上を乗換案内で引くと 260 + 320 = 580円 で、
+//   180 + 220 - 70 = 330 とすると10円合わない。
+//   連絡運賃が単純合算-割引ではない可能性があり、一次情報での確認が要る。
+//   10円の差は本サービスの「目安」の範囲内なので、公表額の70円を採る。
+//   (docs/fare-sources.md の未確認事項に記載)
+const TRANSFER_DISCOUNT = 70;
+
+// 割引の対象になる事業者の組。直接乗り継ぐ場合のみ。
+const TRANSFER_DISCOUNT_PAIRS = [["metro", "toei"]];
+
+function transferDiscountBetween(opA, opB) {
+  for (const [x, y] of TRANSFER_DISCOUNT_PAIRS) {
+    if ((opA === x && opB === y) || (opA === y && opB === x)) return TRANSFER_DISCOUNT;
+  }
+  return 0;
+}
+
 // 直線距離(m)の合計から営業キロ(推定)へ
 function toFareKm(meters) {
   return (meters * ROUTE_FACTOR) / 1000;

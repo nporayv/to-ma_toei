@@ -454,9 +454,21 @@ function evaluateRoute(net, steps, opts) {
   const freeLegs = legs.filter((l) => !l.walk && l.group && l.group.free);
   const usesFree = freeLegs.length > 0;
 
+  // 事業者をまたぐ乗継割引(メトロ⇄都営)。直接乗り継ぐ組にだけ効く。
+  // 途中に徒歩やJRを挟む場合は別々のきっぷになるため対象外。
+  let transferDiscount = 0;
+  const paid = fareGroups.filter((g) => !g.walk);
+  for (let i = 1; i < paid.length; i++) {
+    if (fareGroups.indexOf(paid[i]) !== fareGroups.indexOf(paid[i - 1]) + 1) continue;
+    transferDiscount += transferDiscountBetween(paid[i - 1].op, paid[i].op);
+  }
+
   return {
     legs, fareGroups,
-    totalRegular: fareGroups.reduce((a, g) => a + g.regular, 0),
+    transferDiscount,
+    // 通常運賃からだけ引く。無料乗車券の利用者はメトロ側を単独のきっぷで
+    // 買うため乗継割引は効かず、実費は変わらない。
+    totalRegular: fareGroups.reduce((a, g) => a + g.regular, 0) - transferDiscount,
     totalActual: fareGroups.reduce((a, g) => a + g.actual, 0),
     time: Math.round(time),
     transfers,
