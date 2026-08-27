@@ -69,6 +69,13 @@ fetch("network.json")
     renderHistory();
     renderExamples();
     if (raw.generated) $("dataDate").textContent = raw.generated;
+
+    // アプリのバージョンは sw.js の VERSION を真実の源としている
+    // (更新するとキャッシュも入れ替わる仕組みのため、必ず1箇所に集約)
+    fetch("./sw.js").then((r) => r.text()).then((t) => {
+      const m = t.match(/const VERSION = "([^"]+)"/);
+      if (m) $("appVersion").textContent = m[1];
+    }).catch(() => {});
     applyUrlQuery();
   })
   .catch((e) => {
