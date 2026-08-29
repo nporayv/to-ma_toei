@@ -143,21 +143,27 @@ class Network {
     // 隣接関係は駅データ.jpの join データ由来。単なる並び順ではないので、
     // 分岐(例: 鶴見線)や環状線の閉じ方(山手線・大江戸線)も正しく表現される。
     for (const l of raw.lines) {
-      for (const [i, j] of l.edges) {
+      for (let ei = 0; ei < l.edges.length; ei++) {
+        const [i, j] = l.edges[ei];
         const a = l.stations[i], b = l.stations[j];
         const sa = this.stations.get(a), sb = this.stations.get(b);
         if (!sa || !sb) continue;
         const m = haversineM(sa.lat, sa.lon, sb.lat, sb.lon);
-        const min = Math.max(1.5, (m / 1000) * 2.0);
-        this.adj.get(a).push({ to: b, line: l.id, meters: m, min, walk: false });
-        this.adj.get(b).push({ to: a, line: l.id, meters: m, min, walk: false });
+        // 営業キロは、公式の駅間キロがあればそれを、無ければ直線距離を路線ごとの
+        // 補正係数で伸ばした推定値を使う。どちらも tools/build_network.py が用意する。
+        const km = (l.km && l.km[ei] !== undefined)
+          ? l.km[ei]
+          : (m / 1000) * (l.f || ROUTE_FACTOR);
+        const min = Math.max(1.5, km * 2.0);
+        this.adj.get(a).push({ to: b, line: l.id, meters: m, km, min, walk: false });
+        this.adj.get(b).push({ to: a, line: l.id, meters: m, km, min, walk: false });
       }
     }
     for (const [a, b, m] of raw.walk) {
       if (!this.adj.has(a) || !this.adj.has(b)) continue;
       const min = m / WALK_SPEED + WALK_EXTRA;
-      this.adj.get(a).push({ to: b, line: null, meters: m, min, walk: true });
-      this.adj.get(b).push({ to: a, line: null, meters: m, min, walk: true });
+      this.adj.get(a).push({ to: b, line: null, meters: m, km: 0, min, walk: true });
+      this.adj.get(b).push({ to: a, line: null, meters: m, km: 0, min, walk: true });
     }
 
     // 無料になる路線・駅
@@ -258,7 +264,7 @@ function searchWeighted(net, from, to, penalty) {
       }
       if (t < (best.get(e.to) ?? Infinity)) {
         best.set(e.to, t);
-        prev.set(e.to, { from: cur.st, line: e.line, meters: e.meters, walk: e.walk });
+        prev.set(e.to, { from: cur.st, line: e.line, meters: e.meters, km: e.km, walk: e.walk });
         heap.push({ pri: t, st: e.to, line: e.walk ? null : e.line });
       }
     }
@@ -277,22 +283,22 @@ function rebuild(prev, from, to) {
   while (cur !== from) {
     const p = prev.get(cur);
     if (!p) return null;
-    steps.push({ from: p.from, to: cur, line: p.line, meters: p.meters, walk: p.walk });
+    steps.push({ from: p.from, to: cur, line: p.line, meters: p.meters, km: p.km, walk: p.walk });
     cur = p.from;
   }
   return steps.reverse();
 }
 
 // --- 運賃を考慮した多目的探索 ---------------------------------------------
-// 状態: (駅, いま乗っている事業者, その事業者で乗った距離)
-// ラベル: 確定済み運賃 paid / 現事業者の距離 segM / 所要時間 time
+// 状態: (駅, いま乗っている事業者, その事業者での営業キロ)
+// ラベル: 確定済み運賃 paid / 現事業者での営業キロ segKm / 所要時間 time
 function searchByFare(net, from, to, opts, timeLimit) {
-  const start = { st: from, op: null, segM: 0, paid: 0, time: 0, line: null, prev: null, step: null };
+  const start = { st: from, op: null, segKm: 0, paid: 0, time: 0, line: null, prev: null, step: null };
   const pool = new Map();  // "駅|事業者" -> ラベル配列(非劣解のみ)
   const results = [];
   const heap = new MinHeap();
 
-  const costOf = (lb) => lb.paid + (lb.op ? fareForSegment(lb.op, toFareKm(lb.segM), {
+  const costOf = (lb) => lb.paid + (lb.op ? fareForSegment(lb.op, lb.segKm, {
     free: net.isFreeOp(lb.op), kind: opts.kind, companion: opts.companion
   }).actual : 0);
 
@@ -330,35 +336,35 @@ function searchByFare(net, from, to, opts, timeLimit) {
     if (costOf(lb) >= bestCost && lb.time + h(lb.st) >= bestTime) continue;
 
     for (const e of net.adj.get(lb.st) || []) {
-      let paid = lb.paid, segM = lb.segM, op = lb.op, time = lb.time + e.min;
+      let paid = lb.paid, segKm = lb.segKm, op = lb.op, time = lb.time + e.min;
 
       if (e.walk) {
         // 別の駅へ歩くので、いまの事業者の運賃はここで確定する
-        if (op) paid += fareForSegment(op, toFareKm(segM), {
+        if (op) paid += fareForSegment(op, segKm, {
           free: net.isFreeOp(op), kind: opts.kind, companion: opts.companion
         }).actual;
-        op = null; segM = 0;
+        op = null; segKm = 0;
       } else {
         const eop = net.opOf(e.line);
         if (lb.line !== null && e.line !== lb.line) {
           time += THROUGH_PAIRS.has(throughKey(String(lb.line), String(e.line))) ? THROUGH_MIN : TRANSFER_MIN;
         }
         if (op === eop) {
-          segM += e.meters;                       // 同じ会社に乗り続ける
+          segKm += e.km;                          // 同じ会社に乗り続ける
         } else {
-          if (op) paid += fareForSegment(op, toFareKm(segM), {
+          if (op) paid += fareForSegment(op, segKm, {
             free: net.isFreeOp(op), kind: opts.kind, companion: opts.companion
           }).actual;
-          op = eop; segM = e.meters;              // 会社が変わる=運賃が切り替わる
+          op = eop; segKm = e.km;                 // 会社が変わる=運賃が切り替わる
         }
       }
       const lower = h(e.to);
       if (time + lower > timeLimit) continue;
 
       const next = {
-        st: e.to, op, segM, paid, time,
+        st: e.to, op, segKm, paid, time,
         line: e.walk ? null : e.line, prev: lb,
-        step: { from: lb.st, to: e.to, line: e.line, meters: e.meters, walk: e.walk }
+        step: { from: lb.st, to: e.to, line: e.line, meters: e.meters, km: e.km, walk: e.walk }
       };
       const cost = costOf(next);
       if (cost >= bestCost && time + lower >= bestTime) continue;
@@ -366,9 +372,9 @@ function searchByFare(net, from, to, opts, timeLimit) {
       const key = e.to + "|" + (op || "-");
       const list = pool.get(key) || [];
       // 支払済み運賃・区間距離・時間のすべてで劣るラベルは捨てる
-      if (list.some((o) => o.paid <= paid && o.segM <= segM && o.time <= time)) continue;
-      const kept = list.filter((o) => !(paid <= o.paid && segM <= o.segM && time <= o.time));
-      kept.push({ paid, segM, time });
+      if (list.some((o) => o.paid <= paid && o.segKm <= segKm && o.time <= time)) continue;
+      const kept = list.filter((o) => !(paid <= o.paid && segKm <= o.segKm && time <= o.time));
+      kept.push({ paid, segKm, time });
       kept.sort((a, b) => a.paid - b.paid || a.time - b.time);
       pool.set(key, kept.slice(0, MAX_LABELS));
 
@@ -401,9 +407,9 @@ function evaluateRoute(net, steps, opts) {
   for (const s of steps) {
     const last = legs[legs.length - 1];
     if (last && !s.walk && !last.walk && last.line === s.line) {
-      last.path.push(s.to); last.meters += s.meters;
+      last.path.push(s.to); last.meters += s.meters; last.km += s.km;
     } else {
-      legs.push({ walk: s.walk, line: s.line, path: [s.from, s.to], meters: s.meters });
+      legs.push({ walk: s.walk, line: s.line, path: [s.from, s.to], meters: s.meters, km: s.km });
     }
   }
 
@@ -421,13 +427,13 @@ function evaluateRoute(net, steps, opts) {
   for (const leg of legs) {
     leg.op = leg.walk ? null : net.opOf(leg.line);
     const g = fareGroups[fareGroups.length - 1];
-    if (!leg.walk && g && g.op === leg.op) { g.meters += leg.meters; g.legs.push(leg); }
-    else if (!leg.walk) fareGroups.push({ op: leg.op, meters: leg.meters, legs: [leg] });
-    else fareGroups.push({ op: null, meters: leg.meters, legs: [leg], walk: true });
+    if (!leg.walk && g && g.op === leg.op) { g.meters += leg.meters; g.km += leg.km; g.legs.push(leg); }
+    else if (!leg.walk) fareGroups.push({ op: leg.op, meters: leg.meters, km: leg.km, legs: [leg] });
+    else fareGroups.push({ op: null, meters: leg.meters, km: 0, legs: [leg], walk: true });
   }
   for (const g of fareGroups) {
     if (g.walk) { g.regular = 0; g.actual = 0; continue; }
-    const f = fareForSegment(g.op, toFareKm(g.meters), {
+    const f = fareForSegment(g.op, g.km, {
       free: net.isFreeOp(g.op), kind: opts.kind, companion: opts.companion
     });
     g.regular = f.regular; g.actual = f.actual; g.note = f.note;
@@ -439,7 +445,7 @@ function evaluateRoute(net, steps, opts) {
   let time = 0, transfers = 0, prevLine = null;
   const notes = [];
   for (const s of steps) {
-    time += s.walk ? s.meters / WALK_SPEED + WALK_EXTRA : Math.max(1.5, (s.meters / 1000) * 2.0);
+    time += s.walk ? s.meters / WALK_SPEED + WALK_EXTRA : Math.max(1.5, s.km * 2.0);
     if (!s.walk && prevLine !== null && s.line !== prevLine) {
       const th = THROUGH_PAIRS.has(throughKey(String(prevLine), String(s.line)));
       const hard = hardTransfer(s.from, prevLine, s.line);
