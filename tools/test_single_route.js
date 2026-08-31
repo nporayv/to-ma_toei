@@ -182,6 +182,24 @@ if (!expected) {
   process.exit(0);
 }
 
+// ---------------------------------------------------------------------------
+// 実データとの突き合わせ
+//
+// ★比較の作法★ ここを間違えると、正しい動作を「危険」と誤検知する。
+//   実データ(乗換案内)は (1)障害者割引を知らない通常運賃で、しかも
+//   (2)本サービスとは別の経路のことがある。それを本サービスの実費(割引後)と
+//   そのまま引き算すると、割引が効いているぶんだけ「安すぎる」と出てしまう。
+//   実際にこの誤りで10区間中7区間が誤警告し、正しい実装を疑わせていた
+//   (2026-08-31に修正)。
+//
+//   そこで合否は次の一点だけで判定する:
+//     同じ事業者を通っているとき、本サービスの「通常運賃」が実測より安いか。
+//   通常運賃は割引の有無に左右されないため、運賃表の誤りだけを拾える。
+//   合計額の比較は、経路が違えば意味を持たないので合否に使わない。
+// ---------------------------------------------------------------------------
+const half = (yen) => Math.ceil(yen / 2 / 10) * 10;
+const ALWAYS_HALF = new Set(["keisei", "keisei_matsudo", "hokuso"]);
+
 const best = res.options[0];
 const mine = new Map();
 for (const g of best.fareGroups) {
@@ -189,20 +207,56 @@ for (const g of best.fareGroups) {
   mine.set(g.op, (mine.get(g.op) || 0) + g.regular);
 }
 
-console.log(`\n―― 実データとの差 (${expected.source})`);
-console.log(`${expected.note}`);
+console.log(`\n―― 実データとの突き合わせ (${expected.source})`);
+console.log(`実データの経路: ${expected.note}`);
+
+const cheaper = [];   // 運賃表が実際より安い = 危険
+const offRoute = [];  // 実データ側にしかない事業者 = 別経路なので比較できない
 for (const [op, yen] of expected.per) {
   const got = mine.get(op);
   const name = (net.operators[op] || {}).name || op;
-  if (got == null) {
-    console.log(`${name}: 実 ${yen}円 / この経路では通っていない`);
-    continue;
-  }
+  if (got == null) { offRoute.push(name); continue; }
   const diff = got - yen;
-  console.log(`${name}: 実 ${yen}円 / 見積 ${got}円 ${diff === 0 ? "(一致)" : `(${diff > 0 ? "+" : ""}${diff}円)`}`);
+  const mark = diff === 0 ? "一致"
+    : diff > 0 ? `+${diff}円 (高い=安全側)`
+    : `${diff}円 ★安い`;
+  console.log(`  ${name}: 実測 ${yen}円 / 本サービス ${got}円  ${mark}`);
+  if (diff < 0) cheaper.push(`${name} ${got}円 < 実測${yen}円`);
 }
-console.log(`合計(通常): 実 ${expected.regular}円 / 見積 ${best.totalRegular}円`);
-console.log(`合計(無料券): 実 ${expected.free}円 / 見積 ${best.totalActual}円`);
-if (best.totalActual < expected.free) {
-  console.log(`★ ${expected.free - best.totalActual}円 安く見積もっている(利用者が改札で足りなくなる向き)`);
+if (offRoute.length) {
+  console.log(`  実データが通る ${offRoute.join("・")} を、本サービスは通らない(別経路を選んでいる)`);
 }
+
+// 実データ側にも同じ割引ルールを当てた参考値。目安として出すだけで合否には使わない。
+let refActual = 0;
+for (const [op, yen] of expected.per) {
+  if ((net.operators[op] || {}).free) continue;
+  refActual += ALWAYS_HALF.has(op) ? half(yen) : yen;
+}
+console.log(`  参考: 実データの経路に割引を当てると ${refActual}円 / 本サービスの案内は ${best.totalActual}円`);
+
+// ---------------------------------------------------------------------------
+// ★このスクリプトは合否を出さない★
+//
+//   社ごとの金額を比べても合否は決められない。同じ事業者でも、本サービスと
+//   実データでは乗っている区間が違うことがあるからで、そのときの差は
+//   運賃表の誤りではなく経路の違いを見ているにすぎない。
+//   直通運転では社ごとの内訳の切り方も一致しない
+//   (渋谷〜みなとみらい: 実データは東急310+MM200、本サービスは東急320+MM190。
+//    合計はどちらも510円で正しい)。
+//
+//   運賃表が正しいかどうかの判定は tools/test_fares.js が担う。
+//   あちらは「事業者・営業キロ・実運賃」を1点ずつ突き合わせるので、
+//   経路の違いに影響されない。差が気になったら、その区間の実運賃を調べて
+//   test_fares.js の CASES に1行足すこと。それが唯一の正しい直し方。
+// ---------------------------------------------------------------------------
+console.log("");
+if (cheaper.length) {
+  console.log("要確認: 実データより安い社があります ── " + cheaper.join(" / "));
+  console.log("  経路が違うだけかもしれません。実運賃を調べて tools/test_fares.js に足して判定してください。");
+} else if (offRoute.length) {
+  console.log("参考: 同じ事業者の運賃はすべて実測以上でした(別経路を選んでいるため合計は比較不可)。");
+} else {
+  console.log("参考: 同じ経路・同じ事業者で、運賃はすべて実測以上でした。");
+}
+console.log("運賃表そのものの合否は  node tools/test_fares.js  で判定します。");
