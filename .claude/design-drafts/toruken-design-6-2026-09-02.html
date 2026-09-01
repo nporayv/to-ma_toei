@@ -1,0 +1,867 @@
+<title>とるけん デザイン6案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Zen+Old+Mincho:wght@600;900&family=Noto+Sans+JP:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+
+<style>
+/* ============================================================
+   台紙（提案シート）— ここだけがテーマに追従する
+   ============================================================ */
+:root{
+  --ground:#FAF8F6;
+  --panel:#FFFFFF;
+  --ink:#17110F;
+  --body:#4C443F;
+  --mute:#8A7D76;
+  --rule:#E6DDD8;
+  --rule-soft:#F0EAE6;
+  --brand:#C0272D;
+  --brand-tint:#F6E7E6;
+  --shadow:0 1px 2px rgba(23,17,15,.05), 0 12px 32px -18px rgba(23,17,15,.30);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#15100E;
+    --panel:#1D1815;
+    --ink:#F4EDE9;
+    --body:#B6A9A2;
+    --mute:#8A7C74;
+    --rule:#332A26;
+    --rule-soft:#241E1B;
+    --brand:#FF7B72;
+    --brand-tint:#2E1B19;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#15100E;
+  --panel:#1D1815;
+  --ink:#F4EDE9;
+  --body:#B6A9A2;
+  --mute:#8A7C74;
+  --rule:#332A26;
+  --rule-soft:#241E1B;
+  --brand:#FF7B72;
+  --brand-tint:#2E1B19;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--body);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  font-feature-settings:"palt";
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{width:100%;max-width:1240px;margin:0 auto;padding:0 clamp(1.15rem,4vw,2.5rem)}
+
+/* ---- マストヘッド ---- */
+.mast{padding:clamp(3rem,8vw,6rem) 0 clamp(1.75rem,4vw,3rem);border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--brand);margin:0 0 1.25rem;
+}
+.mast h1{
+  font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  font-weight:900;
+  font-size:clamp(2.1rem,6.5vw,3.9rem);
+  line-height:1.24;letter-spacing:.01em;
+  color:var(--ink);margin:0;text-wrap:balance;
+}
+.mast .lede{max-width:40rem;margin:1.5rem 0 0;font-size:1.02rem}
+.mast .lede b{color:var(--ink);font-weight:700}
+
+/* ---- 共通制約バンド ---- */
+.rules{padding:clamp(2rem,5vw,3.25rem) 0;border-bottom:1px solid var(--rule)}
+.rules h2{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 1.35rem;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem}
+.rule-grid div{border-left:2px solid var(--brand);padding-left:1rem}
+.rule-grid dt{font-weight:700;color:var(--ink);font-size:.95rem;line-height:1.6}
+.rule-grid dd{margin:.25rem 0 0;font-size:.88rem;line-height:1.75;color:var(--body)}
+
+/* ---- 案グリッド ---- */
+.deck{padding:clamp(2.5rem,6vw,4.5rem) 0}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(19.5rem,1fr));
+  gap:clamp(1.75rem,3.5vw,2.75rem);
+  align-items:start;
+}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:1.5rem 1.5rem 1.25rem;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:1.15rem;
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.panel:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(23,17,15,.06), 0 22px 44px -22px rgba(23,17,15,.42)}
+@media (prefers-reduced-motion:reduce){.panel{transition:none}.panel:hover{transform:none}}
+
+.p-head{display:flex;flex-direction:column;gap:.45rem}
+.p-no{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.78rem;font-weight:700;letter-spacing:.14em;color:var(--brand);
+}
+.p-name{
+  font-family:"Zen Old Mincho","Hiragino Mincho ProN",serif;
+  font-weight:600;font-size:1.4rem;line-height:1.35;color:var(--ink);margin:0;
+}
+.p-why{margin:0;font-size:.86rem;line-height:1.8;color:var(--body)}
+
+/* ---- 見本の台座 ---- */
+.frame{
+  background:var(--rule-soft);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:1.1rem;
+  display:flex;justify-content:center;
+  overflow-x:auto;
+}
+
+/* ---- 仕様ストリップ ---- */
+.spec{display:flex;flex-direction:column;gap:.7rem;border-top:1px solid var(--rule);padding-top:.95rem}
+.sw{display:flex;gap:.4rem}
+.sw i{width:1.55rem;height:1.55rem;border-radius:2px;border:1px solid rgba(0,0,0,.14);display:block}
+.spec dl{
+  margin:0;display:grid;grid-template-columns:auto 1fr;gap:.2rem .9rem;
+  font-size:.78rem;line-height:1.7;
+}
+.spec dt{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);padding-top:.15rem;
+}
+.spec dd{margin:0;color:var(--body)}
+
+/* ---- 締め ---- */
+.close{padding:clamp(2rem,5vw,3.5rem) 0 clamp(3rem,7vw,5rem);border-top:1px solid var(--rule)}
+.close h2{
+  font-family:"Zen Old Mincho","Hiragino Mincho ProN",serif;
+  font-weight:600;font-size:1.5rem;color:var(--ink);margin:0 0 1rem;
+}
+.close p{max-width:44rem;margin:0 0 .9rem;font-size:.95rem}
+.close p:last-child{margin-bottom:0}
+.close code{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;
+  background:var(--brand-tint);color:var(--brand);padding:.12em .45em;border-radius:2px;
+}
+
+/* ============================================================
+   見本（モックアップ）共通の骨格
+   意図的に単一テーマ：どの案も「赤白の見本」として、
+   台紙が濃色でも刷り見本のように同じ色で出す。
+   色はすべて .mN スコープの literal 値から取る。
+   ============================================================ */
+.mk{
+  width:100%;max-width:20.5rem;min-width:17.5rem;
+  background:var(--k-bg);
+  color:var(--k-ink);
+  border:var(--k-bd,1px solid var(--k-line));
+  border-radius:var(--k-r,4px);
+  box-shadow:var(--k-sh,none);
+  font-family:var(--k-font);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.mk-head{
+  background:var(--k-head-bg);color:var(--k-head-ink);
+  padding:var(--k-head-pad,.9rem 1rem);
+  border-bottom:var(--k-head-bd,none);
+  position:relative;
+}
+.mk-ver{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.56rem;font-weight:700;letter-spacing:.1em;
+  color:var(--k-ver-ink,currentColor);opacity:var(--k-ver-op,.72);
+  display:block;margin-bottom:.2rem;
+}
+.mk-title{
+  margin:0;font-family:var(--k-font-head,var(--k-font));
+  font-weight:var(--k-title-w,700);
+  font-size:var(--k-title-s,1.18rem);
+  letter-spacing:var(--k-title-ls,0);
+  line-height:1.3;color:inherit;
+}
+.mk-tag{margin:.15rem 0 0;font-size:.63rem;line-height:1.6;opacity:.82}
+
+.mk-body{padding:.9rem;display:flex;flex-direction:column;gap:.7rem;background:var(--k-bg)}
+
+.mk-card{
+  background:var(--k-card);
+  border:var(--k-card-bd,1px solid var(--k-line));
+  border-radius:var(--k-r,4px);
+  box-shadow:var(--k-card-sh,none);
+  padding:.75rem;display:flex;flex-direction:column;gap:.45rem;
+}
+.mk-field{display:flex;flex-direction:column;gap:.15rem}
+.mk-lab{
+  font-size:.6rem;font-weight:700;letter-spacing:.08em;
+  color:var(--k-sub);text-transform:none;
+}
+.mk-inp{
+  border:var(--k-inp-bd,1px solid var(--k-line));
+  border-radius:var(--k-inp-r,3px);
+  background:var(--k-inp-bg,#fff);
+  padding:.42rem .55rem;font-size:.83rem;font-weight:500;color:var(--k-ink);
+  font-family:var(--k-font-data,var(--k-font));
+}
+.mk-swap{
+  align-self:center;
+  width:1.55rem;height:1.55rem;flex:none;
+  display:grid;place-items:center;
+  border:var(--k-swap-bd,1px solid var(--k-line));
+  border-radius:var(--k-swap-r,50%);
+  background:var(--k-swap-bg,transparent);
+  color:var(--k-swap-ink,var(--k-red));
+  font-size:.78rem;line-height:1;
+}
+.mk-btn{
+  margin-top:.15rem;
+  background:var(--k-btn-bg,var(--k-red));
+  color:var(--k-btn-ink,#fff);
+  border:var(--k-btn-bd,none);
+  border-radius:var(--k-btn-r,var(--k-r,4px));
+  box-shadow:var(--k-btn-sh,none);
+  padding:.6rem;font-size:.86rem;font-weight:700;letter-spacing:.02em;
+  font-family:inherit;text-align:center;
+}
+
+.mk-hl{
+  background:var(--k-hl-bg,var(--k-free-bg));
+  border:var(--k-hl-bd,1px solid var(--k-free));
+  border-radius:var(--k-r,4px);
+  padding:.6rem .7rem;
+}
+.mk-hl-lead{
+  margin:0;font-size:.76rem;font-weight:700;color:var(--k-free);
+  line-height:1.5;
+}
+.mk-hl-grid{margin:.4rem 0 0;display:grid;grid-template-columns:1fr 1fr;gap:.3rem .6rem}
+.mk-hl-grid dt{font-size:.56rem;color:var(--k-sub);letter-spacing:.05em}
+.mk-hl-grid dd{
+  margin:0;font-size:.86rem;font-weight:700;color:var(--k-ink);
+  font-family:var(--k-font-data,var(--k-font));
+}
+
+.mk-fare{
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.3rem .45rem;
+  padding:var(--k-fare-pad,.6rem .7rem);
+  background:var(--k-fare-bg,transparent);
+  border:var(--k-fare-bd,1px solid var(--k-line));
+  border-radius:var(--k-r,4px);
+  font-variant-numeric:tabular-nums;
+}
+.mk-was{font-size:.68rem;color:var(--k-sub);text-decoration:line-through}
+.mk-arrow{font-size:.68rem;color:var(--k-sub)}
+.mk-now{
+  font-size:1.32rem;font-weight:900;color:var(--k-red);line-height:1;
+  font-family:var(--k-font-data,var(--k-font));letter-spacing:-.01em;
+}
+.mk-save{
+  font-size:.6rem;font-weight:700;color:var(--k-free);
+  background:var(--k-free-bg);border-radius:2px;padding:.15rem .35rem;
+  margin-left:auto;
+}
+
+.mk-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.mk-st{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;min-height:1.55rem}
+.mk-dot{
+  width:var(--k-dot,.5rem);height:var(--k-dot,.5rem);flex:none;
+  border-radius:var(--k-dot-r,50%);
+  background:var(--k-dot-bg,var(--k-ink));
+  border:var(--k-dot-bd,none);
+  margin-left:var(--k-dot-ml,.28rem);
+}
+.mk-nm{font-size:.9rem;font-weight:700;color:var(--k-ink);font-family:var(--k-font-data,var(--k-font))}
+.mk-flag{
+  font-size:.56rem;font-weight:700;color:var(--k-free);
+  background:var(--k-free-bg);border-radius:2px;padding:.1rem .3rem;
+  border:var(--k-flag-bd,none);
+}
+.mk-seg{display:flex;align-items:center;gap:.45rem;padding:.28rem 0;min-height:2rem}
+.mk-bar{
+  width:var(--k-bar-w,.28rem);align-self:stretch;flex:none;
+  background:var(--k-bar-bg,var(--k-line));
+  border-radius:var(--k-bar-r,2px);
+  margin-left:calc(var(--k-dot,.5rem)/2 + var(--k-dot-ml,.28rem) - var(--k-bar-w,.28rem)/2);
+}
+.mk-ln{font-size:.68rem;color:var(--k-sub);line-height:1.45}
+.mk-sf{
+  margin-left:auto;font-size:.74rem;font-weight:700;color:var(--k-ink);
+  font-family:var(--k-font-data,var(--k-font));font-variant-numeric:tabular-nums;
+}
+.mk-seg.free .mk-bar{background:var(--k-free)}
+.mk-seg.free .mk-sf{color:var(--k-free)}
+.mk-sf small{display:block;font-size:.52rem;font-weight:400;opacity:.8}
+
+/* ============================================================
+   01 サインボード
+   ============================================================ */
+.m1{
+  --k-font:"Zen Kaku Gothic New",system-ui,sans-serif;
+  --k-bg:#FFFFFF; --k-card:#F4F4F5; --k-ink:#101114; --k-sub:#5C6067;
+  --k-red:#C8102E; --k-line:#D3D6DA; --k-free:#00693E; --k-free-bg:#E6F0EB;
+  --k-r:0px;
+  --k-bd:1px solid #101114;
+  --k-head-bg:#C8102E; --k-head-ink:#fff; --k-head-pad:1rem;
+  --k-title-w:900; --k-title-ls:.02em; --k-title-s:1.24rem;
+  --k-inp-r:0px; --k-inp-bd:2px solid #101114;
+  --k-swap-r:0px; --k-swap-bd:2px solid #101114; --k-swap-ink:#101114;
+  --k-btn-r:0px;
+  --k-card-bd:none;
+  --k-dot:.72rem; --k-dot-r:0; --k-bar-w:.4rem; --k-bar-r:0;
+  --k-fare-bd:2px solid #101114; --k-fare-pad:.7rem;
+}
+.m1 .mk-head{border-bottom:4px solid #101114}
+.m1 .mk-hl{border-width:2px;border-left-width:.5rem}
+.m1 .mk-lab{text-transform:uppercase;letter-spacing:.14em;font-size:.56rem}
+.m1 .mk-st{border-bottom:1px solid #E3E5E8}
+
+/* ============================================================
+   02 きっぷ
+   ============================================================ */
+.m2{
+  --k-font:"Zen Kaku Gothic New",system-ui,sans-serif;
+  --k-font-data:"JetBrains Mono",ui-monospace,monospace;
+  --k-bg:#FDFBF4; --k-card:#FFFEFA; --k-ink:#2B2620; --k-sub:#8A8074;
+  --k-red:#B62025; --k-line:#DED5C4; --k-free:#3F6B33; --k-free-bg:#EDF2E7;
+  --k-r:8px;
+  --k-bd:1px solid #DED5C4;
+  --k-sh:0 2px 0 #EFE8D8;
+  --k-head-bg:#FDFBF4; --k-head-ink:#2B2620;
+  --k-head-bd:2px dashed #C9BFA8;
+  --k-title-w:700; --k-title-s:1.2rem; --k-title-ls:.06em;
+  --k-ver-ink:#B62025; --k-ver-op:1;
+  --k-inp-bg:#FFFEFA; --k-inp-bd:1px solid #DED5C4;
+  --k-swap-ink:#B62025;
+  --k-btn-r:999px;
+  --k-fare-bd:2px dashed #C9BFA8; --k-fare-bg:#FFFEFA;
+  --k-dot:.55rem; --k-bar-w:.2rem;
+  --k-flag-bd:1px dashed #9DB58F;
+}
+.m2 .mk-head::after{
+  content:"";position:absolute;left:0;right:0;bottom:-.42rem;height:.84rem;
+  background:radial-gradient(circle at .42rem 50%, #EFE9DA .38rem, transparent .4rem) 0 0/1.1rem .84rem repeat-x;
+  pointer-events:none;
+}
+.m2 .mk-title{font-family:"Zen Old Mincho","Hiragino Mincho ProN",serif}
+.m2 .mk-now{letter-spacing:-.02em}
+.m2 .mk-btn{box-shadow:0 2px 0 #7E1519}
+
+/* ============================================================
+   03 明朝
+   ============================================================ */
+.m3{
+  --k-font:"Zen Kaku Gothic New",system-ui,sans-serif;
+  --k-font-head:"Zen Old Mincho","Hiragino Mincho ProN",serif;
+  --k-bg:#FFFFFF; --k-card:#FFFFFF; --k-ink:#141414; --k-sub:#8A8A8A;
+  --k-red:#C0272D; --k-line:#E4E4E4; --k-free:#1E6B4F; --k-free-bg:#F1F7F4;
+  --k-r:0px;
+  --k-bd:1px solid #E4E4E4;
+  --k-head-bg:#FFFFFF; --k-head-ink:#C0272D;
+  --k-head-bd:1px solid #C0272D; --k-head-pad:1.35rem 1rem 1.1rem;
+  --k-title-w:600; --k-title-s:1.42rem;
+  --k-card-bd:none; --k-inp-r:0; --k-inp-bd:1px solid #E4E4E4;
+  --k-swap-bd:1px solid #E4E4E4;
+  --k-btn-r:0;
+  --k-fare-bd:none; --k-fare-pad:.5rem 0;
+  --k-hl-bd:none; --k-hl-bg:#F1F7F4;
+  --k-dot:.42rem; --k-bar-w:1px; --k-bar-r:0;
+}
+.m3 .mk-card{border-top:1px solid #E4E4E4;border-bottom:1px solid #E4E4E4;border-radius:0;padding:.85rem 0}
+.m3 .mk-fare{border-top:1px solid #C0272D;border-bottom:1px solid #E4E4E4;border-radius:0}
+.m3 .mk-now{font-family:"Zen Old Mincho",serif;font-weight:900;font-size:1.5rem}
+.m3 .mk-hl-lead{font-family:"Zen Old Mincho",serif;font-weight:600}
+.m3 .mk-nm{font-family:"Zen Old Mincho",serif;font-weight:600;font-size:.95rem}
+.m3 .mk-btn{letter-spacing:.14em;font-weight:700}
+
+/* ============================================================
+   04 ブロック
+   ============================================================ */
+.m4{
+  --k-font:"Zen Kaku Gothic New",system-ui,sans-serif;
+  --k-bg:#FFF6F5; --k-card:#FFFFFF; --k-ink:#000000; --k-sub:#4A4A4A;
+  --k-red:#E8112D; --k-line:#000000; --k-free:#0B7A3B; --k-free-bg:#DFF5E7;
+  --k-r:0px;
+  --k-bd:3px solid #000;
+  --k-sh:6px 6px 0 #000;
+  --k-head-bg:#E8112D; --k-head-ink:#fff; --k-head-pad:.95rem 1rem;
+  --k-head-bd:3px solid #000;
+  --k-title-w:900; --k-title-s:1.26rem; --k-title-ls:.01em;
+  --k-card-bd:3px solid #000; --k-card-sh:4px 4px 0 #000;
+  --k-inp-bd:2px solid #000; --k-inp-r:0;
+  --k-swap-bd:2px solid #000; --k-swap-r:0; --k-swap-bg:#fff; --k-swap-ink:#000;
+  --k-btn-bd:3px solid #000; --k-btn-r:0; --k-btn-sh:4px 4px 0 #000;
+  --k-fare-bd:3px solid #000; --k-fare-bg:#fff; --k-fare-pad:.7rem;
+  --k-hl-bd:3px solid #000; --k-hl-bg:#DFF5E7;
+  --k-dot:.75rem; --k-dot-r:0; --k-dot-bd:2px solid #000; --k-dot-bg:#E8112D;
+  --k-bar-w:.45rem; --k-bar-r:0; --k-bar-bg:#000;
+  --k-flag-bd:2px solid #000;
+}
+.m4 .mk-lab{text-transform:uppercase;letter-spacing:.16em;font-size:.55rem;color:#000}
+.m4 .mk-save{border:2px solid #000}
+
+/* ============================================================
+   05 路線図
+   ============================================================ */
+.m5{
+  --k-font:"Noto Sans JP",system-ui,sans-serif;
+  --k-bg:#FFFFFF; --k-card:#F7F8FA; --k-ink:#151A21; --k-sub:#67707E;
+  --k-red:#D42B33; --k-line:#DFE3E9; --k-free:#0E7C66; --k-free-bg:#E7F4F1;
+  --k-r:14px;
+  --k-bd:1px solid #DFE3E9;
+  --k-head-bg:#FFFFFF; --k-head-ink:#151A21;
+  --k-head-bd:1px solid #DFE3E9; --k-head-pad:1rem 1rem .85rem;
+  --k-title-w:700; --k-title-s:1.2rem;
+  --k-ver-ink:#D42B33; --k-ver-op:1;
+  --k-card-bd:none; --k-inp-r:10px; --k-inp-bd:1px solid #DFE3E9;
+  --k-swap-bg:#D42B33; --k-swap-ink:#fff; --k-swap-bd:none;
+  --k-btn-r:999px;
+  --k-fare-bd:1px solid #DFE3E9; --k-fare-bg:#F7F8FA;
+  --k-hl-bd:none; --k-hl-bg:#E7F4F1;
+  --k-dot:.85rem; --k-dot-bg:#fff; --k-dot-bd:.22rem solid #D42B33;
+  --k-bar-w:.32rem; --k-bar-r:999px; --k-bar-bg:#D42B33;
+  --k-dot-ml:.1rem;
+}
+.m5 .mk-head::before{
+  content:"";position:absolute;right:0;top:0;width:5.5rem;height:100%;
+  background:repeating-linear-gradient(135deg,#F2F4F7 0 .55rem,#FFF .55rem 1.1rem);
+  opacity:.9;pointer-events:none;
+}
+.m5 .mk-head>*{position:relative;z-index:1}
+.m5 .mk-seg.free .mk-bar{background:#0E7C66}
+.m5 .mk-st:last-child .mk-dot{border-color:#0E7C66}
+.m5 .mk-btn{box-shadow:0 6px 18px -8px rgba(212,43,51,.75)}
+
+/* ============================================================
+   06 やわらか
+   ============================================================ */
+.m6{
+  --k-font:"Noto Sans JP",system-ui,sans-serif;
+  --k-bg:#FFF9F9; --k-card:#FFFFFF; --k-ink:#2A2326; --k-sub:#8C7E82;
+  --k-red:#D8434A; --k-line:#F0E2E3; --k-free:#2F7D62; --k-free-bg:#EDF6F2;
+  --k-r:20px;
+  --k-bd:none;
+  --k-sh:0 2px 6px rgba(160,110,110,.08), 0 18px 40px -22px rgba(160,110,110,.45);
+  --k-head-bg:#FFF9F9; --k-head-ink:#2A2326; --k-head-pad:1.15rem 1.1rem .9rem;
+  --k-title-w:700; --k-title-s:1.22rem;
+  --k-ver-ink:#D8434A; --k-ver-op:1;
+  --k-card-bd:none; --k-card-sh:0 2px 8px rgba(160,110,110,.10);
+  --k-inp-r:14px; --k-inp-bd:1px solid #F0E2E3; --k-inp-bg:#FFFAFA;
+  --k-swap-bg:#FFF0F0; --k-swap-bd:none; --k-swap-ink:#D8434A;
+  --k-btn-r:999px;
+  --k-fare-bd:none; --k-fare-bg:#FFFFFF; --k-fare-pad:.75rem .85rem;
+  --k-hl-bd:none;
+  --k-dot:.6rem; --k-bar-w:.3rem; --k-bar-r:999px; --k-bar-bg:#F0E2E3;
+}
+.m6 .mk-body{gap:.85rem}
+.m6 .mk-fare{box-shadow:0 2px 8px rgba(160,110,110,.10)}
+.m6 .mk-btn{box-shadow:0 8px 20px -8px rgba(216,67,74,.7)}
+.m6 .mk-nm{font-weight:700}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">Design directions &mdash; 6 proposals</p>
+    <h1>とるけん<br>デザイン6案</h1>
+    <p class="lede">
+      都営交通無料乗車券をお持ちの方のための経路検索アプリ「とるけん」の意匠案です。
+      <b>6案すべて赤白ベース</b>で、同じ画面（青砥 → 中野坂上の検索結果）を各案の作法で描いています。
+      条件を揃えてあるので、番号で選んでください。選ばれた案を <b>index.html / style.css</b> に実装します。
+    </p>
+  </header>
+
+  <section class="rules">
+    <h2>全案が共通で守っていること</h2>
+    <div class="rule-grid">
+      <div>
+        <dt>文字は大きめ、タップ領域は44px以上</dt>
+        <dd>利用者に障害のある方を想定しているため、見た目の都合で小さくしません。</dd>
+      </div>
+      <div>
+        <dt>色だけに頼らない</dt>
+        <dd>無料区間は色に加えて「ここから都営線・無料」の文字と形でも示します。</dd>
+      </div>
+      <div>
+        <dt>運賃は必ず「概算」と併記</dt>
+        <dd>実額との差が出る前提のため、どの案でも通常運賃と割引後を並べて出します。</dd>
+      </div>
+      <div>
+        <dt>3つの表示色を維持</dt>
+        <dd>デフォルト／明るい／暗いの切替は残します。下の見本はデフォルト（赤白）です。</dd>
+      </div>
+    </div>
+  </section>
+
+  <section class="deck">
+    <div class="grid">
+
+      <!-- 01 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">01</span>
+          <h3 class="p-name">サインボード</h3>
+          <p class="p-why">駅の案内サインの作法。太い赤帯、黒の極太罫、角ゼロ。装飾を一切持たず、読み違えようがない強さで押す。公共サービスとしての信頼感が最も出る。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m1">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#C8102E"></i><i style="background:#101114"></i><i style="background:#FFFFFF"></i><i style="background:#F4F4F5"></i><i style="background:#00693E"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Zen Kaku Gothic New 900 / 太ゴシック</dd>
+            <dt>角</dt><dd>0px（完全な直角）</dd>
+            <dt>向く人</dt><dd>迷わず操作したい・視力に不安がある方</dd>
+          </dl>
+        </div>
+      </article>
+
+      <!-- 02 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">02</span>
+          <h3 class="p-name">きっぷ</h3>
+          <p class="p-why">乗車券そのものを模す。生成りの紙色、ミシン目の破線、等幅の数字。「きっぷを持っている」という体験と地続きになり、6案の中で最も親しみが出る。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m2">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#B62025"></i><i style="background:#2B2620"></i><i style="background:#FDFBF4"></i><i style="background:#DED5C4"></i><i style="background:#3F6B33"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Zen Old Mincho + JetBrains Mono（数字）</dd>
+            <dt>角</dt><dd>8px / ボタンは丸型・ミシン目あり</dd>
+            <dt>向く人</dt><dd>アプリらしさより馴染みを求める方</dd>
+          </dl>
+        </div>
+      </article>
+
+      <!-- 03 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">03</span>
+          <h3 class="p-name">明朝</h3>
+          <p class="p-why">既にある利用規約ページと同じ作法。明朝の見出し、髪の毛のような赤い罫、余白で読ませる。塗り面積が小さくまぶしくない。規約ページと並べたとき最も統一が取れる。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m3">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#C0272D"></i><i style="background:#141414"></i><i style="background:#FFFFFF"></i><i style="background:#E4E4E4"></i><i style="background:#1E6B4F"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Zen Old Mincho 600 + ゴシック本文</dd>
+            <dt>角</dt><dd>0px / 罫は1px</dd>
+            <dt>向く人</dt><dd>落ち着いた公的な佇まいを求める方</dd>
+          </dl>
+        </div>
+      </article>
+
+      <!-- 04 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">04</span>
+          <h3 class="p-name">ブロック</h3>
+          <p class="p-why">3pxの黒枠と影を落とさない段差。装飾ではなく輪郭で要素を分ける。コントラストが極端に高いので、実は6案で最も見やすい。若い層にも強く刺さる。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m4">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#E8112D"></i><i style="background:#000000"></i><i style="background:#FFF6F5"></i><i style="background:#FFFFFF"></i><i style="background:#0B7A3B"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Zen Kaku Gothic New 900</dd>
+            <dt>角</dt><dd>0px / 枠3px・影は6px段差</dd>
+            <dt>向く人</dt><dd>輪郭がはっきりしていないと見づらい方</dd>
+          </dl>
+        </div>
+      </article>
+
+      <!-- 05 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">05</span>
+          <h3 class="p-name">路線図</h3>
+          <p class="p-why">路線図の記法をそのままUIに持ち込む。駅は白抜きの丸、区間は太い丸端の線。経路そのものが主役になり、「どこから無料か」が図として一目で読める。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m5">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#D42B33"></i><i style="background:#151A21"></i><i style="background:#FFFFFF"></i><i style="background:#DFE3E9"></i><i style="background:#0E7C66"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Noto Sans JP 700</dd>
+            <dt>角</dt><dd>14px / 線は丸端・ボタンは丸型</dd>
+            <dt>向く人</dt><dd>文字より図で理解したい方</dd>
+          </dl>
+        </div>
+      </article>
+
+      <!-- 06 -->
+      <article class="panel">
+        <div class="p-head">
+          <span class="p-no">06</span>
+          <h3 class="p-name">やわらか</h3>
+          <p class="p-why">角を大きく取り、影を薄く重ね、赤も一段落とす。長時間見ても疲れず、緊張させない。体調に波がある利用者を想定するなら、この案が最も負担が軽い。</p>
+        </div>
+        <div class="frame">
+          <div class="mk m6">
+            <div class="mk-head">
+              <span class="mk-ver">VER 1.00</span>
+              <h4 class="mk-title">とるけん</h4>
+              <p class="mk-tag">都営交通を経由した経路を検索します</p>
+            </div>
+            <div class="mk-body">
+              <div class="mk-card">
+                <div class="mk-field"><span class="mk-lab">出発駅</span><span class="mk-inp">青砥</span></div>
+                <span class="mk-swap" aria-hidden="true">⇅</span>
+                <div class="mk-field"><span class="mk-lab">到着駅</span><span class="mk-inp">中野坂上</span></div>
+                <span class="mk-btn">経路をさがす</span>
+              </div>
+              <div class="mk-hl">
+                <p class="mk-hl-lead">都営線を使って行けます</p>
+                <dl class="mk-hl-grid">
+                  <div><dt>入る駅</dt><dd>押上</dd></div>
+                  <div><dt>出る駅</dt><dd>中野坂上</dd></div>
+                </dl>
+              </div>
+              <div class="mk-fare">
+                <span class="mk-was">通常 480円</span>
+                <span class="mk-arrow" aria-hidden="true">→</span>
+                <span class="mk-now">100円</span>
+                <span class="mk-save">380円 割引</span>
+              </div>
+              <ol class="mk-tl">
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">青砥</span></li>
+                <li class="mk-seg"><span class="mk-bar"></span><span class="mk-ln">京成押上線・5駅</span><span class="mk-sf">100円</span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">押上</span><span class="mk-flag">ここから都営線・無料</span></li>
+                <li class="mk-seg free"><span class="mk-bar"></span><span class="mk-ln">浅草線 → 大江戸線・14駅</span><span class="mk-sf">0円<small>無料乗車券</small></span></li>
+                <li class="mk-st"><span class="mk-dot"></span><span class="mk-nm">中野坂上</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="sw" aria-hidden="true">
+            <i style="background:#D8434A"></i><i style="background:#2A2326"></i><i style="background:#FFF9F9"></i><i style="background:#F0E2E3"></i><i style="background:#2F7D62"></i>
+          </div>
+          <dl>
+            <dt>書体</dt><dd>Noto Sans JP 400/700</dd>
+            <dt>角</dt><dd>20px / 影は薄く二重</dd>
+            <dt>向く人</dt><dd>強い色や硬い形が負担になる方</dd>
+          </dl>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="close">
+    <h2>選んだあとにやること</h2>
+    <p>
+      番号を指定していただければ、その案を <code>style.css</code> のCSS変数（<code>--brand</code> ほか）と
+      各コンポーネントに落とし込みます。既存の3表示色（デフォルト／明るい／暗い）の仕組みは維持したまま、
+      選ばれた案を「デフォルト」として組み直す形です。
+    </p>
+    <p>
+      掛け合わせも可能です。たとえば「<b>03の配色に05の路線図タイムライン</b>」のような指定でも構いません。
+      逆に、どれもピンと来なければ方向性だけ言っていただければ引き直します。
+    </p>
+    <p>
+      なお実装時は <code>sw.js</code> の <code>VERSION</code> を上げないと利用者の端末で見た目が変わりません。
+      作業に含めます。
+    </p>
+  </section>
+
+</div>
