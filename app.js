@@ -32,22 +32,48 @@ const store = {
 const MAX_SAVED = 5;    // よく使う駅
 const MAX_HISTORY = 10; // 検索履歴
 
-// --- 表示色の切り替え ------------------------------------------------------
-// 3種類から選ぶ。選んだものは次回も引き継ぐ。
+// --- 見た目の切り替え ------------------------------------------------------
+// 見た目は「意匠(デザイン)」と「表示色(明暗)」の2軸で決まる。
+// 意匠はプルダウンで7種類、表示色はボタンで3種類から選ぶ。
+// どちらも選んだものを端末に残し、次に開いたときも同じ見た目で出す。
 // データ読み込みを待たずに効かせたいので、ここで先に設定する。
-(function setupTheme() {
-  const apply = (mode) => {
-    document.documentElement.setAttribute("data-theme", mode);
-    document.querySelectorAll("[data-theme-set]").forEach((b) => {
-      b.setAttribute("aria-pressed", b.dataset.themeSet === mode ? "true" : "false");
-    });
+//
+// 見え方の好みは人によって大きく違う。まぶしさが負担になる方、
+// 輪郭がはっきりしないと読めない方、明朝でないと目が滑る方がいるため、
+// 1つを正解として押しつけず、選べるようにしてある。
+const SKINS = ["mincho", "sign", "ticket", "block", "map", "soft", "classic"];
+const DEFAULT_SKIN = "mincho";
+const THEMES = ["default", "light", "dark"];
+
+(function setupLook() {
+  // 意匠
+  const applySkin = (skin) => {
+    // 保存された値が壊れていたり、廃止した意匠名が残っていても既定に戻して動かす
+    const use = SKINS.includes(skin) ? skin : DEFAULT_SKIN;
+    document.documentElement.setAttribute("data-skin", use);
+    const sel = $("skinSelect");
+    if (sel) sel.value = use;
+    return use;
   };
-  apply(store.get("theme", "default"));
-  document.querySelectorAll("[data-theme-set]").forEach((b) => {
-    b.addEventListener("click", () => {
-      apply(b.dataset.themeSet);
-      store.set("theme", b.dataset.themeSet);
+  // 読めない値が残っていたら、既定に戻した上で保存し直す(次回も同じ判定を繰り返さない)
+  store.set("skin", applySkin(store.get("skin", DEFAULT_SKIN)));
+  const sel = $("skinSelect");
+  if (sel) {
+    sel.addEventListener("change", () => { store.set("skin", applySkin(sel.value)); });
+  }
+
+  // 表示色
+  const applyTheme = (mode) => {
+    const use = THEMES.includes(mode) ? mode : "default";
+    document.documentElement.setAttribute("data-theme", use);
+    document.querySelectorAll("[data-theme-set]").forEach((b) => {
+      b.setAttribute("aria-pressed", b.dataset.themeSet === use ? "true" : "false");
     });
+    return use;
+  };
+  applyTheme(store.get("theme", "default"));
+  document.querySelectorAll("[data-theme-set]").forEach((b) => {
+    b.addEventListener("click", () => { store.set("theme", applyTheme(b.dataset.themeSet)); });
   });
 })();
 
@@ -231,9 +257,9 @@ $("histClearBtn").addEventListener("click", () => {
   renderHistory();
 });
 
+// 保存するのは出発駅だけ。到着駅は毎回変わるため、残しても選び直す手間が減らない。
 $("starBtn").addEventListener("click", () => {
   const from = resolve("from", $("fromInput"));
-  const to = resolve("to", $("toInput"));
   if (!from) {
     $("starBtn").textContent = "★ 先に出発駅を入れてください";
     setTimeout(() => { $("starBtn").textContent = "★ 出発駅を保存"; }, 1800);

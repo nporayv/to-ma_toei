@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>とるけん-都営ルート優先検索アプリ</title>
-<meta name="description" content="都営交通無料乗車券をお持ちの方のための経路検索ツール。任意の駅から目的の駅まで、都営線を最大限に使う経路と概算運賃を案内します。" />
+<title>とるけん－都営交通ルート検索ツール</title>
+<meta name="description" content="都営交通を優先的に利用するための乗り換え案内ツール。都営交通無料乗車券をお持ちの方に向けて、出発する駅から目的の駅まで、都営線を最大限に使う経路と概算運賃を案内します。" />
 <link rel="stylesheet" href="style.css" />
 
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#d02a2b" />
+<meta name="theme-color" content="#c0272d" />
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#result">検索結果へskip</a>
+<a class="skip-link" href="#result">検索結果へ移動</a>
 
 <div id="updateBar" class="update-bar" role="status" hidden>
   <span>新しいデータがあります。</span>
@@ -25,14 +25,30 @@
 </div>
 
 <header class="site-header">
-  <div class="ver-badge">Ver 1.00</div>
-  <h1>とるけん－都営ルート優先検索アプリ<small class="title-kari">(仮称)</small></h1>
-  <p class="tagline">都営交通を経由した電車の経路を検索します</p>
-  <div class="theme-switch" role="group" aria-label="表示色の選択">
-    <span class="sw-label" aria-hidden="true">表示色</span>
-    <button type="button" data-theme-set="default" aria-pressed="true">デフォルト</button>
-    <button type="button" data-theme-set="light" aria-pressed="false">明るい</button>
-    <button type="button" data-theme-set="dark" aria-pressed="false">暗い</button>
+  <div class="ver-badge" id="verBadge">RayV トーマ @Ver 1.00</div>
+  <!-- 「とるけん」の由来が読み取れるよう、都営交通ルート検索の
+       「都」「ル」「検」だけ色を変えている(太字にはしない) -->
+  <h1>とるけん<small class="title-formal">－<span class="tr-hl">都</span>営交通<span class="tr-hl">ル</span>ート<span class="tr-hl">検</span>索ツール <span class="title-provider">提供：<a href="https://x.com/rayv_staff" target="_blank" rel="noopener">NPO法人RayV</a></span></small></h1>
+  <p class="tagline">都営交通を優先的に利用するための乗り換え案内ツールです。利用にあたっては<a href="rayv_toruken_kiyaku_policy.html">利用規約</a>に同意のうえ、ご利用ください。</p>
+  <div class="look-switch">
+    <div class="skin-switch">
+      <label class="sw-label" for="skinSelect">デザイン</label>
+      <select id="skinSelect">
+        <option value="mincho">明朝</option>
+        <option value="sign">サインボード</option>
+        <option value="ticket">きっぷ</option>
+        <option value="block">ブロック</option>
+        <option value="map">路線図</option>
+        <option value="soft">やわらか</option>
+        <option value="classic">初代</option>
+      </select>
+    </div>
+    <div class="theme-switch" role="group" aria-label="表示色の選択">
+      <span class="sw-label" aria-hidden="true">表示色</span>
+      <button type="button" data-theme-set="default" aria-pressed="true">デフォルト</button>
+      <button type="button" data-theme-set="light" aria-pressed="false">明るい</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">暗い</button>
+    </div>
   </div>
 </header>
 
@@ -65,16 +81,12 @@
                placeholder="例: 中野坂上" />
         <p id="toHelp" class="help">駅名を入力すると候補が出ます</p>
         <ul id="toList" class="ac-list" role="listbox" aria-label="到着駅の候補" hidden></ul>
-        <div class="saved-row" id="savedTo" hidden>
-          <span class="saved-label">よく使う駅:</span>
-          <span class="saved-chips"></span>
-        </div>
       </div>
     </div>
 
     <p class="star-hint">
       <button type="button" id="starBtn" class="star-btn">★ 出発駅を保存</button>
-      <span class="help">5駅までデバイスの内部に保存できます。保存すると下の「ためしに」にも使われます</span>
+      <span class="help">5駅まで端末の中に保存できます。保存すると下の「ためしに」にも使われます</span>
     </p>
 
     <details class="options">
@@ -132,8 +144,8 @@
     利用者の記録も取っていません。
   </p>
   <p>
-    <span class="em-ok">電波が届かなくても使えます</span>。いちど開いておけば、地下や圏外でも動きます。
-    ホーム画面に追加しておくとアプリのように使えます
+    <span class="em-ok">電波が届かなくても使えます</span>。いちど開いておけば、地下や圏外でも動きます。<br />
+    <span class="em-ok">ホーム画面に追加しておくとアプリのように使えます</span>
     (iPhoneはSafariの共有ボタン →「ホーム画面に追加」、Androidはメニュー →「アプリをインストール」)。
   </p>
   <h2>免責のまとめ</h2>
