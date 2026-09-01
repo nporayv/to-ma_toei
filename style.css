@@ -1,63 +1,306 @@
-/* 都営むりょうルート
+/* とるけん－都営交通ルート検索ツール
    利用者に障害のある方を想定しているため、文字は大きめ、
-   タップ領域は44px以上、色だけに頼らない表示を基本にする。 */
+   タップ領域は44px以上、色だけに頼らない表示を基本にする。
 
-/* 表示色は3種類。既定は「デフォルト」で、ヘッダを塗りつぶさず赤の文字と線で見せる。
-   赤ベタ+白抜きは面積が大きいとまぶしいため、塗りつぶしは「明るい」を選んだときだけにする。 */
-:root, :root[data-theme="default"] {
-  --brand: #d02a2b;          /* RayVの赤 */
+   ===== 見た目は「意匠(data-skin)」×「表示色(data-theme)」の2軸で決まる =====
+
+   data-skin  … 7種類。既定は mincho(明朝)。プルダウンで選ぶ。
+                mincho / sign / ticket / block / map / soft / classic
+   data-theme … 3種類。既定は default。ボタンで選ぶ。
+                default(ヘッダを塗らない) / light(ヘッダを赤で塗る) / dark(暗い地)
+
+   意匠側は「色のパレット」と「形(角丸・罫の太さ・書体)」だけを定義し、
+   ヘッダの塗り方は表示色側が担当する。こうすると 7×3=21通りを
+   個別に書かずに済み、意匠を足すときも色を1組足すだけで済む。
+
+   書体はOS標準のものだけを使う。このアプリは電波が届かない場所で
+   使われる前提(sw.jsで資材を端末に持たせている)なので、
+   Webフォントを外部から読むと初回オフライン時に崩れる。 */
+
+/* --- 形の既定値。意匠が上書きしなければこの値が使われる --- */
+:root {
+  --font-body: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);   /* 駅名・運賃など、読み違えたくない文字 */
+  --radius: 12px;
+  --radius-input: 10px;
+  --radius-btn: 10px;
+  --border-w: 1px;
+  --input-border-w: 2px;
+  --card-shadow: none;
+  --btn-shadow: none;
+  --head-border-w: 3px;
+  --head-pad: 20px 16px 16px;
+  --title-weight: 700;
+  --title-spacing: .02em;
+  --dot-size: 13px;
+  --dot-radius: 50%;
+  --dot-border-w: 3px;
+  --bar-w: 7px;
+  --bar-radius: 4px;
+  --danger: #b3261e;
+  --focus: #0060df;
+}
+
+/* ===== 意匠ごとの色と形 ===================================================
+   各意匠は「明るい地のパレット」をここで定義する。
+   暗い地(data-theme="dark")は後段でまとめて上書きする。 */
+
+/* --- 明朝(既定) : 規約ページと同じ作法。明朝の見出し、髪の毛のような赤い罫 --- */
+:root, :root[data-skin="mincho"] {
+  --brand: #c0272d;
+  --brand-dark: #8e1d22;
+  --free: #1e6b4f;
+  --free-bg: #f1f7f4;
+  --bg: #ffffff;
+  --card: #ffffff;
+  --text: #141414;
+  --muted: #747474;   /* 白地で4.67:1。#7a7a7a では補助文字が4.29で基準未満だった */
+  --line: #e4e4e4;
+  --font-head: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "MS PMincho", serif;
+  --font-data: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "MS PMincho", serif;
+  --radius: 0px;
+  --radius-input: 0px;
+  --radius-btn: 0px;
+  --border-w: 1px;
+  --input-border-w: 1px;
+  --head-border-w: 1px;
+  --head-pad: 22px 16px 18px;
+  --title-weight: 600;
+  --dot-size: 11px;
+  --dot-border-w: 2px;
+  --bar-w: 3px;
+  --bar-radius: 0px;
+}
+
+/* --- サインボード : 駅の案内サイン。太い赤帯、黒の極太罫、角ゼロ --- */
+:root[data-skin="sign"] {
+  --brand: #c8102e;
+  --brand-dark: #9c0c23;
+  --free: #00693e;
+  --free-bg: #e6f0eb;
+  --bg: #f4f4f5;
+  --card: #ffffff;
+  --text: #101114;
+  --muted: #5c6067;
+  --line: #101114;
+  /* 既定の意匠が明朝なので、ゴシックに戻すには明示が要る */
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);
+  --head-pad: 20px 16px 16px;
+  --title-weight: 900;
+  --title-spacing: .04em;
+  --radius: 0px;
+  --radius-input: 0px;
+  --radius-btn: 0px;
+  --border-w: 2px;
+  --input-border-w: 2px;
+  --head-border-w: 4px;
+  --dot-size: 14px;
+  --dot-radius: 0px;
+  --dot-border-w: 4px;
+  --bar-w: 8px;
+  --bar-radius: 0px;
+}
+
+/* --- きっぷ : 乗車券を模す。生成りの紙、ミシン目の破線、等幅の数字 --- */
+:root[data-skin="ticket"] {
+  --brand: #b62025;
+  --brand-dark: #7e1519;
+  --free: #3f6b33;
+  --free-bg: #edf2e7;
+  --bg: #fdfbf4;
+  --card: #fffefa;
+  --text: #2b2620;
+  --muted: #7b7165;   /* 生成りの地で4.74:1。#8a8074 では3.84で基準未満だった */
+  --line: #ded5c4;
+  --font-head: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --font-data: "SFMono-Regular", "Consolas", "BIZ UDGothic", "MS Gothic", ui-monospace, monospace;
+  --title-spacing: .08em;
+  --title-weight: 700;
+  --head-pad: 20px 16px 16px;
+  --dot-radius: 50%;
+  --dot-border-w: 3px;
+  --radius: 8px;
+  --radius-input: 5px;
+  --radius-btn: 999px;
+  --border-w: 1px;
+  --input-border-w: 1px;
+  --head-border-w: 2px;
+  --card-shadow: 0 2px 0 #efe8d8;
+  --btn-shadow: 0 2px 0 #7e1519;
+  --dot-size: 11px;
+  --bar-w: 4px;
+}
+/* ミシン目: ヘッダの下に破線を敷く */
+:root[data-skin="ticket"] .site-header { border-bottom-style: dashed; }
+:root[data-skin="ticket"] .headline,
+:root[data-skin="ticket"] .route-card.primary { border-style: dashed; }
+
+/* --- ブロック : 3pxの黒枠と段差の影。コントラストが最も高い --- */
+:root[data-skin="block"] {
+  --brand: #e8112d;
+  --brand-dark: #b60d23;
+  --free: #0b7a3b;
+  --free-bg: #dff5e7;
+  --bg: #fff6f5;
+  --card: #ffffff;
+  --text: #000000;
+  --muted: #4a4a4a;
+  --line: #000000;
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);
+  --head-pad: 20px 16px 16px;
+  --title-weight: 900;
+  --radius: 0px;
+  --radius-input: 0px;
+  --radius-btn: 0px;
+  --border-w: 3px;
+  --input-border-w: 2px;
+  --head-border-w: 3px;
+  --card-shadow: 5px 5px 0 #000;
+  --btn-shadow: 4px 4px 0 #000;
+  --dot-size: 14px;
+  --dot-radius: 0px;
+  --dot-border-w: 3px;
+  --bar-w: 8px;
+  --bar-radius: 0px;
+}
+
+/* --- 路線図 : 駅は白抜きの丸、区間は丸端の太線。経路が図として読める --- */
+:root[data-skin="map"] {
+  --brand: #d42b33;
+  --brand-dark: #a81f26;
+  --free: #0e7c66;
+  --free-bg: #e7f4f1;
+  --bg: #f7f8fa;
+  --card: #ffffff;
+  --text: #151a21;
+  --muted: #67707e;
+  --line: #dfe3e9;
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);
+  --head-pad: 20px 16px 16px;
+  --title-weight: 700;
+  --radius: 14px;
+  --radius-input: 10px;
+  --radius-btn: 999px;
+  --border-w: 1px;
+  --input-border-w: 1px;
+  --head-border-w: 1px;
+  --dot-radius: 50%;
+  --btn-shadow: 0 6px 18px -8px rgba(212, 43, 51, .75);
+  --dot-size: 16px;
+  --dot-border-w: 4px;
+  --bar-w: 6px;
+  --bar-radius: 999px;
+}
+
+/* --- やわらか : 角を大きく、影を薄く、赤を一段落とす。負担が最も軽い --- */
+:root[data-skin="soft"] {
+  /* 赤を落としすぎると白抜き文字が読めなくなる。
+     #d8434a では白との比が4.36で基準(4.5)に届かなかったため一段暗くした */
+  --brand: #d03d44;
+  --brand-dark: #b8343a;
+  --free: #2f7d62;
+  --free-bg: #edf6f2;
+  --bg: #fff9f9;
+  --card: #ffffff;
+  --text: #2a2326;
+  --muted: #7d6f73;   /* 白地で4.78:1。#8c7e82 では3.87で基準未満だった */
+  --line: #f0e2e3;
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);
+  --head-pad: 20px 16px 16px;
+  --title-weight: 700;
+  --dot-radius: 50%;
+  --dot-border-w: 3px;
+  --radius: 20px;
+  --radius-input: 14px;
+  --radius-btn: 999px;
+  --border-w: 1px;
+  --input-border-w: 1px;
+  --head-border-w: 1px;
+  --card-shadow: 0 2px 8px rgba(160, 110, 110, .10);
+  --btn-shadow: 0 8px 20px -8px rgba(216, 67, 74, .7);
+  --dot-size: 12px;
+  --bar-w: 6px;
+  --bar-radius: 999px;
+}
+
+/* --- 初代 : Ver 1.00 まで既定だった配色と形。選べるように残してある。
+   既定が明朝になったので、形の変数も明示して初代の姿に戻す
+   (書かないと明朝の角ゼロ・明朝体をそのまま受け継いでしまう)。 --- */
+:root[data-skin="classic"] {
+  --brand: #d02a2b;
   --brand-dark: #a81f20;
   --free: #0a7d3f;
   --free-bg: #eef7f1;
   --bg: #fbfbfc;
-  --card: #fff;
+  --card: #ffffff;
   --text: #1a1d21;
   --muted: #5b6470;
   --line: #dcdfe4;
-  --danger: #b3261e;
-  --focus: #0060df;
+  --font-head: var(--font-body);
+  --font-data: var(--font-body);
   --radius: 12px;
-  /* ヘッダ: 塗りつぶさず、白地に赤文字と赤い下線 */
-  --head-bg: #fff;
-  --head-text: #d02a2b;
-  --head-sub: #6a7280;
-  --head-border: #d02a2b;
-  --sw-bg: rgba(208, 42, 43, .08);
-  --sw-border: rgba(208, 42, 43, .45);
-  --sw-text: #d02a2b;
-  --sw-on-bg: #d02a2b;
-  --sw-on-text: #fff;
+  --radius-input: 10px;
+  --radius-btn: 10px;
+  --border-w: 1px;
+  --input-border-w: 2px;
+  --head-border-w: 3px;
+  --head-pad: 20px 16px 16px;
+  --title-weight: 700;
+  --title-spacing: .02em;
+  --dot-size: 13px;
+  --dot-radius: 50%;
+  --dot-border-w: 3px;
+  --bar-w: 7px;
+  --bar-radius: 4px;
+  --card-shadow: none;
+  --btn-shadow: none;
+}
+
+/* ===== 表示色(明暗) =======================================================
+   意匠が決めたパレットを受けて、ヘッダの塗り方だけを切り替える。 */
+
+/* デフォルト: ヘッダを塗らず、地の色に赤い文字と罫で見せる。
+   赤ベタ+白抜きは面積が大きいとまぶしいため、塗るのは「明るい」だけにする。 */
+:root, :root[data-theme="default"] {
+  --head-bg: var(--card);
+  --head-text: var(--brand);
+  --head-sub: var(--muted);
+  --head-border: var(--brand);
+  --sw-bg: transparent;
+  --sw-border: var(--brand);
+  --sw-text: var(--brand);
+  --sw-on-bg: var(--brand);
+  --sw-on-text: var(--on-brand);
   --on-brand: #fff;
   --on-free: #fff;
+  /* 「とるけん」の由来を示す1文字だけの強調色 */
+  --hl-ink: var(--brand);
 }
 
 /* 明るい: ヘッダを赤で塗りつぶし、白抜き文字にする */
 :root[data-theme="light"] {
-  --brand: #d02a2b;
-  --brand-dark: #a81f20;
-  --free: #0a7d3f;
-  --free-bg: #e8f6ee;
-  --bg: #f4f5f7;
-  --card: #fff;
-  --text: #1a1d21;
-  --muted: #5b6470;
-  --line: #d8dce2;
-  --danger: #b3261e;
-  --focus: #0060df;
-  --head-bg: #d02a2b;
+  --head-bg: var(--brand);
   --head-text: #fff;
-  --head-sub: rgba(255, 255, 255, .92);
+  --head-sub: rgba(255, 255, 255, .88);
   --head-border: transparent;
   --sw-bg: rgba(255, 255, 255, .18);
   --sw-border: rgba(255, 255, 255, .5);
   --sw-text: #fff;
   --sw-on-bg: #fff;
-  --sw-on-text: #d02a2b;
+  --sw-on-text: var(--brand);
   --on-brand: #fff;
   --on-free: #fff;
+  /* 赤地では赤で強調できないため、案内サインと同じ黄で抜く */
+  --hl-ink: #ffe08a;
 }
 
-/* 暗い: 目が疲れにくいよう彩度を落とし、赤も明るめにして読みやすくする */
+/* 暗い: 目が疲れにくいよう地を暗くし、赤も明るめにして読みやすくする。
+   意匠ごとの色味は残しつつ、明度だけを入れ替える。 */
 :root[data-theme="dark"] {
   --brand: #ff6b6c;
   --brand-dark: #ff8f90;
@@ -70,18 +313,39 @@
   --line: #333944;
   --danger: #ff8a80;
   --focus: #7cb7ff;
-  --head-bg: #1e2127;
-  --head-text: #ff6b6c;
-  --head-sub: #a3adba;
-  --head-border: #ff6b6c;
-  --sw-bg: rgba(255, 107, 108, .12);
-  --sw-border: rgba(255, 107, 108, .5);
-  --sw-text: #ff6b6c;
-  --sw-on-bg: #ff6b6c;
-  --sw-on-text: #14161a;
+  --head-bg: var(--card);
+  --head-text: var(--brand);
+  --head-sub: var(--muted);
+  --head-border: var(--brand);
+  --sw-bg: transparent;
+  --sw-border: var(--brand);
+  --sw-text: var(--brand);
+  --sw-on-bg: var(--brand);
+  --sw-on-text: var(--on-brand);
   /* 明るい赤・緑の上は、白抜きだと読みにくいので地の色を載せる */
   --on-brand: #14161a;
   --on-free: #14161a;
+  --hl-ink: var(--brand);
+  /* 黒罫・黒影を前提にした意匠は、暗い地では見えないので打ち消す */
+  --card-shadow: none;
+  --btn-shadow: none;
+}
+/* 暗い地でも意匠ごとの色味は保つ */
+:root[data-skin="ticket"][data-theme="dark"] {
+  --brand: #ff8b7e; --brand-dark: #ffa79c;
+  --bg: #17150f; --card: #211e17; --text: #f0ebdd; --muted: #a89c88; --line: #3a352a;
+}
+:root[data-skin="map"][data-theme="dark"] {
+  --brand: #ff7b82; --brand-dark: #ff9aa0;
+  --bg: #10141a; --card: #1a1f27; --text: #e8edf4; --muted: #97a2b2; --line: #2c333d;
+}
+:root[data-skin="soft"][data-theme="dark"] {
+  --brand: #ff8f95; --brand-dark: #ffabaf;
+  --bg: #171214; --card: #221b1d; --text: #f2e9eb; --muted: #a99a9e; --line: #382d30;
+}
+:root[data-skin="sign"][data-theme="dark"],
+:root[data-skin="block"][data-theme="dark"] {
+  --line: #4a525e;   /* 黒罫のままでは暗い地に沈むため明るくする */
 }
 
 * { box-sizing: border-box; }
@@ -95,7 +359,7 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 17px;
   line-height: 1.7;
   background: var(--bg);
@@ -134,11 +398,16 @@ body {
 .site-header {
   background: var(--head-bg);
   color: var(--head-text);
-  padding: 20px 16px 16px;
+  padding: var(--head-pad);
   text-align: center;
-  border-bottom: 3px solid var(--head-border);
+  border-bottom: var(--head-border-w) solid var(--head-border);
 }
-.site-header h1 { margin: 0; font-size: 1.5rem; letter-spacing: .02em; }
+.site-header h1 {
+  margin: 0; font-size: 1.5rem;
+  font-family: var(--font-head);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-spacing);
+}
 .tagline { margin: 6px 0 0; font-size: .92rem; color: var(--head-sub); }
 
 main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
@@ -146,8 +415,9 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 /* --- 検索フォーム --- */
 .search-card {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: var(--border-w) solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
   padding: 18px 16px;
 }
 
@@ -170,8 +440,9 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   min-height: 52px;
   padding: 12px 14px;
   font-size: 1.08rem;
-  border: 2px solid var(--line);
-  border-radius: 10px;
+  font-family: var(--font-data);
+  border: var(--input-border-w) solid var(--line);
+  border-radius: var(--radius-input);
   background: var(--card);
   color: var(--text);
 }
@@ -183,8 +454,8 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   position: absolute; z-index: 20; top: 100%; left: 0; right: 0;
   margin: 4px 0 0; padding: 4px; list-style: none;
   background: var(--card);
-  border: 2px solid var(--line);
-  border-radius: 10px;
+  border: var(--input-border-w) solid var(--line);
+  border-radius: var(--radius-input);
   max-height: 320px; overflow-y: auto;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
 }
@@ -200,7 +471,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   color: var(--muted); font-size: .86rem;
 }
 .ac-list li.ac-hint:hover { background: none; }
-.ac-name { font-weight: 700; font-size: 1.02rem; }
+.ac-name { font-weight: 700; font-size: 1.02rem; font-family: var(--font-data); }
 .ac-sub {
   grid-column: 1 / -1;
   font-size: .76rem; color: var(--muted);
@@ -217,7 +488,8 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   margin-top: 26px;
   min-width: 48px; min-height: 48px;
   font-size: 1.3rem;
-  border: 2px solid var(--line); border-radius: 50%;
+  border: var(--input-border-w) solid var(--line);
+  border-radius: var(--radius-btn, 50%);
   background: var(--card); color: var(--text); cursor: pointer;
 }
 .swap-btn:hover { border-color: var(--brand); color: var(--brand); }
@@ -238,7 +510,9 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   min-height: 56px; padding: 14px;
   font-size: 1.12rem; font-weight: 700;
   background: var(--brand); color: var(--on-brand);
-  border: none; border-radius: 10px; cursor: pointer;
+  border: none; border-radius: var(--radius-btn);
+  box-shadow: var(--btn-shadow);
+  cursor: pointer;
 }
 .go-btn:hover { background: var(--brand-dark); }
 
@@ -248,15 +522,16 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 
 /* --- ためしに / 履歴 --- */
 .tryout, .history {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 14px 16px;
+  background: var(--card); border: var(--border-w) solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--card-shadow);
+  padding: 14px 16px;
   margin-top: 16px;
 }
 .try-head { font-size: .95rem; margin: 0 0 9px; color: var(--text); }
 .ex { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
 .chip {
   min-height: 40px; padding: 7px 14px;
-  border: 2px solid var(--line); border-radius: 20px;
+  border: var(--input-border-w) solid var(--line); border-radius: 20px;
   background: var(--card); color: var(--text);
   font-size: .88rem; cursor: pointer;
 }
@@ -302,7 +577,8 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .clear-btn {
   min-height: 56px; padding: 14px 20px;
   background: var(--card); color: var(--muted);
-  border: 2px solid var(--line); border-radius: 10px;
+  border: var(--input-border-w) solid var(--line);
+  border-radius: var(--radius-btn);
   font-size: .95rem; cursor: pointer; white-space: nowrap;
 }
 .clear-btn:hover { border-color: var(--brand); color: var(--brand); }
@@ -322,6 +598,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   background: var(--free-bg);
   border: 2px solid var(--free);
   border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
   padding: 16px;
   margin-bottom: 18px;
 }
@@ -334,16 +611,22 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .hl-grid > div {
   flex: 1 1 190px;
   background: var(--card);
-  border: 1px solid var(--line); border-radius: 9px;
+  border: var(--border-w) solid var(--line); border-radius: var(--radius-input);
   padding: 9px 13px;
 }
 .hl-grid dt { font-size: .76rem; color: var(--muted); }
-.hl-station { margin: 2px 0 0; font-size: 1.24rem; font-weight: 700; }
+.hl-station {
+  margin: 2px 0 0; font-size: 1.24rem; font-weight: 700;
+  font-family: var(--font-data);
+}
 
 .hl-money { display: flex; flex-wrap: wrap; align-items: baseline; gap: 9px; margin: 0; }
 .was { text-decoration: line-through; color: var(--muted); font-size: .98rem; }
 .arrow { color: var(--muted); }
-.now { font-size: 1.7rem; font-weight: 800; color: var(--free); }
+.now {
+  font-size: 1.7rem; font-weight: 800; color: var(--free);
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+}
 .headline.nofree .now { color: var(--text); }
 .save {
   background: var(--free); color: var(--on-free);
@@ -354,8 +637,9 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 /* --- 経路カード --- */
 .route-card {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: var(--border-w) solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
   padding: 14px 16px 8px;
   margin-bottom: 16px;
 }
@@ -373,7 +657,10 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 }
 .route-card:not(.primary) .rc-tag { background: var(--muted); color: var(--card); }
 .rc-fare { font-size: .84rem; color: var(--muted); }
-.rc-fare b { font-size: 1.32rem; color: var(--text); margin-right: 6px; }
+.rc-fare b {
+  font-size: 1.32rem; color: var(--text); margin-right: 6px;
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+}
 .rc-was { text-decoration: line-through; }
 /* 所要時間と乗換回数は、運賃と同じくらい判断の材料になるので同じ大きさで出す */
 .rc-meta { margin-left: auto; font-size: 1.32rem; color: var(--text); }
@@ -387,12 +674,13 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   padding: 5px 0 5px 4px;
 }
 .tl-dot {
-  width: 13px; height: 13px; flex: none;
-  border: 3px solid var(--muted); border-radius: 50%;
+  width: var(--dot-size); height: var(--dot-size); flex: none;
+  border: var(--dot-border-w) solid var(--muted);
+  border-radius: var(--dot-radius);
   background: var(--card);
 }
-.tl-stop.endpoint .tl-dot { border-color: var(--text); border-width: 4px; }
-.tl-name { font-weight: 700; font-size: 1.06rem; }
+.tl-stop.endpoint .tl-dot { border-color: var(--text); }
+.tl-name { font-weight: 700; font-size: 1.06rem; font-family: var(--font-data); }
 .tl-role {
   font-size: .72rem; color: var(--muted);
   border: 1px solid var(--line); border-radius: 4px; padding: 0 6px;
@@ -429,7 +717,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 }
 .tl-bar {
   position: absolute; left: 0; top: 0; bottom: 0;
-  width: 7px; border-radius: 4px;
+  width: var(--bar-w); border-radius: var(--bar-radius);
   background: var(--line-color, var(--muted));
 }
 .tl-bar.walk {
@@ -446,7 +734,10 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .tl-stops { font-size: .84rem; color: var(--muted); }
 .tl-through { font-size: .74rem; color: var(--muted); width: 100%; }
 
-.tl-fare { margin-left: auto; font-weight: 700; font-size: 1.02rem; text-align: right; }
+.tl-fare {
+  margin-left: auto; font-weight: 700; font-size: 1.02rem; text-align: right;
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+}
 .tl-fare small {
   display: block; font-weight: 400;
   font-size: .72rem; color: var(--muted);
@@ -502,7 +793,7 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 /* --- 表示色の切り替え --- */
 .theme-switch {
   display: flex; gap: 6px; justify-content: center; align-items: center;
-  flex-wrap: wrap; margin-top: 12px;
+  flex-wrap: wrap;
 }
 .theme-switch .sw-label {
   font-size: .78rem; color: var(--head-sub); margin-right: 2px;
@@ -589,15 +880,16 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 
 /* --- 検索結果の一覧(目次) --- */
 .route-index {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px;
+  background: var(--card); border: var(--border-w) solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--card-shadow);
+  padding: 12px 14px; margin-bottom: 16px;
 }
 .ri-head { margin: 0 0 8px; font-size: .9rem; color: var(--muted); }
 .route-index ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .ri-link {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
   min-height: 44px; padding: 7px 12px;
-  border: 1px solid var(--line); border-radius: 9px;
+  border: var(--border-w) solid var(--line); border-radius: var(--radius-input);
   text-decoration: none; color: var(--text);
 }
 .ri-link:hover { border-color: var(--brand); background: var(--free-bg); }
@@ -607,7 +899,10 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   font-size: .76rem; font-weight: 700; flex: none;
 }
 .ri-link.free .ri-no { background: var(--free); color: var(--on-free); }
-.ri-fare { font-size: 1.1rem; font-weight: 700; }
+.ri-fare {
+  font-size: 1.1rem; font-weight: 700;
+  font-family: var(--font-data); font-variant-numeric: tabular-nums;
+}
 .ri-meta { font-size: .84rem; color: var(--muted); }
 .ri-tag {
   margin-left: auto; font-size: .74rem;
@@ -649,25 +944,106 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
   font-weight: 400; font-size: .78rem; color: var(--muted);
 }
 
-/* --- バージョンバッジ --- */
+/* --- バージョン表示 ---
+   ページの右端に寄せる。囲みや色で目立たせる必要はないので文字だけにする。
+   タイトルと重ならないよう、絶対配置ではなくヘッダ内の独立した行にしている。 */
 .site-header { position: relative; }
 .ver-badge {
-  position: absolute; top: 10px; right: 12px;
+  width: max-content;
+  margin: 0 0 6px auto;
   font-size: .7rem;
-  padding: 2px 9px; border-radius: 20px;
-  background: #f5e6c8; color: #7a5a00; border: 1px solid #d4a843;
+  font-family: var(--font-data);
+  color: var(--head-sub);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .ver-badge {
-    background: #2e2006; color: #e6c170; border-color: #9a7830;
-  }
+/* ヘッダのタイトル。短い呼び名を大きく、正式名称と提供者を小さく添える。
+   正式名称は利用規約・プライバシーポリシーと同じ表記にしてある。 */
+.title-formal {
+  display: inline-block;
+  font-size: .5em; font-weight: 400;
+  color: var(--head-sub);
+  margin-left: .5em;
+  letter-spacing: 0;
+  vertical-align: baseline;
 }
-:root[data-theme="dark"] .ver-badge {
-  background: #2e2006; color: #e6c170; border-color: #9a7830;
+/* 由来の1文字。太字にはせず、色だけで拾えるようにする */
+.tr-hl { color: var(--hl-ink); }
+
+.title-provider { margin-left: .9em; white-space: nowrap; }
+.title-provider a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.title-provider a:hover { color: var(--hl-ink); }
+
+/* ヘッダの説明文にある利用規約へのリンク */
+.tagline a {
+  color: var(--head-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-/* ヘッダのタイトル内「(仮称)」注記 */
-.title-kari { font-size: .55em; color: var(--head-sub); margin-left: .3em; font-weight: 400; }
+@media (max-width: 480px) {
+  /* 狭い画面では折り返して2行にする(縮小すると読めなくなるため) */
+  .title-formal { display: block; margin: 2px 0 0; font-size: .58em; }
+  .title-provider { display: block; margin: 0; }
+}
+
+/* --- 見た目の切り替え(デザインと表示色を1行に並べる) --- */
+.look-switch {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; align-items: center;
+  gap: 8px 18px;
+  margin-top: 12px;
+}
+
+/* --- デザイン(意匠)の選択 --- */
+.skin-switch {
+  display: flex; gap: 8px; justify-content: center; align-items: center;
+  flex-wrap: wrap;
+}
+.skin-switch .sw-label { font-size: .78rem; color: var(--head-sub); }
+.skin-switch select {
+  min-height: 40px; padding: 6px 32px 6px 12px;
+  font-size: .85rem; font-family: inherit;
+  color: var(--sw-text);
+  background: var(--sw-bg);
+  border: 1px solid var(--sw-border);
+  border-radius: 16px;
+  cursor: pointer;
+  /* 端末標準の矢印だと地の色に埋もれることがあるので自前で描く */
+  -webkit-appearance: none; appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 15px center, right 10px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+/* 選択肢の一覧は端末側が描くため、地色を明示しないと暗い配色で読めなくなる */
+.skin-switch select option { background: var(--card); color: var(--text); }
+
+/* --- 意匠ごとの微調整 ---------------------------------------------------
+   変数だけでは表せない、その意匠に固有の作法をここに置く。 */
+
+/* ブロック: ボタンにも黒枠を回さないと、段差の影だけが浮いてしまう */
+:root[data-skin="block"] .go-btn { border: 3px solid #000; }
+:root[data-skin="block"][data-theme="dark"] .go-btn { border-color: var(--line); }
+
+/* サインボード: 見出しは案内サインらしく詰めて太く */
+:root[data-skin="sign"] .res-title,
+:root[data-skin="sign"] .hl-lead { font-weight: 900; letter-spacing: .02em; }
+
+/* 明朝: 見出しも明朝で通す。罫は細く、余白で読ませる */
+:root[data-skin="mincho"] .res-title,
+:root[data-skin="mincho"] .hl-lead,
+:root[data-skin="mincho"] .site-footer h2 {
+  font-family: var(--font-head); font-weight: 600;
+}
+
+/* 路線図: 乗換の丸を白抜きにして、路線図の記法に寄せる */
+:root[data-skin="map"] .tl-dot { background: var(--card); border-color: var(--brand); }
+:root[data-skin="map"] .tl-stop.endpoint .tl-dot { border-color: var(--text); }
 
 /* --- 同意バー --- */
 .consent-bar {
