@@ -2,3 +2,4 @@ tools/.cache/
 tools/csv/
 tools/__pycache__/
 .claude/workflow-notes.md
+docs/session-handoff.md
