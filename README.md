@@ -1,4 +1,4 @@
-# 都営交通ルート検索
+# とるけん－都営ルート優先検索アプリ(仮称)
 
 都営交通無料乗車券をお持ちの方のための乗換案内です。
 
@@ -181,6 +181,7 @@ python tools/build_network.py   # network.json 再生成 + sw.js のVERSION自�
 | `docs/CHANGELOG.md` | バージョンごとの変更履歴 |
 | `docs/data-requests.md` | 必要なデータの一覧と、受領済み資料の状況 |
 | `docs/walk-transfer-candidates.md` | 徒歩乗換の候補一覧(54組中42組を採用済み) |
+| `rayv_toruken_kiyaku_policy.html` | 利用規約・プライバシーポリシー・わかりやすい説明 |
 | `LICENSE` / `NOTICE` | Apache-2.0 の全文と、出典・運賃の但し書き |
 
 ## 経路探索のしくみ

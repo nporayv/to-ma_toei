@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>都営交通ルート検索</title>
-<meta name="description" content="都営交通を経由した電車の経路と運賃を検索します。任意の駅から目的の駅まで、都営線をできるだけ使う経路を案内します。" />
+<title>とるけん-都営ルート優先検索アプリ</title>
+<meta name="description" content="都営交通無料乗車券をお持ちの方のための経路検索ツール。任意の駅から目的の駅まで、都営線を最大限に使う経路と概算運賃を案内します。" />
 <link rel="stylesheet" href="style.css" />
 
 <link rel="manifest" href="manifest.webmanifest" />
@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="都営ルート検索" />
+<meta name="apple-mobile-web-app-title" content="とるけん" />
 </head>
 <body>
 
@@ -25,7 +25,8 @@
 </div>
 
 <header class="site-header">
-  <h1>都営交通ルート検索</h1>
+  <div class="ver-badge">Ver 1.00</div>
+  <h1>とるけん－都営ルート優先検索アプリ<small class="title-kari">(仮称)</small></h1>
   <p class="tagline">都営交通を経由した電車の経路を検索します</p>
   <div class="theme-switch" role="group" aria-label="表示色の選択">
     <span class="sw-label" aria-hidden="true">表示色</span>
@@ -72,8 +73,8 @@
     </div>
 
     <p class="star-hint">
-      <button type="button" id="starBtn" class="star-btn">★ いま入れた2駅をよく使う駅に保存</button>
-      <span class="help">(5駅まで。保存すると下の「ためしに」にも使われます)</span>
+      <button type="button" id="starBtn" class="star-btn">★ 出発駅を保存</button>
+      <span class="help">5駅までデバイスの内部に保存できます。保存すると下の「ためしに」にも使われます</span>
     </p>
 
     <details class="options">
@@ -116,44 +117,40 @@
 </main>
 
 <footer class="site-footer">
+  <p class="consent-bar">ご利用にあたっては<a href="rayv_toruken_kiyaku_policy.html">〈利用規約・プライバシーポリシー・わかりやすい説明〉</a>に同意のうえご利用ください</p>
   <h2>このサービスについて</h2>
   <p>
-    <strong>都営交通無料乗車券</strong>の対象は 都営地下鉄(浅草線・三田線・新宿線・大江戸線)・
-    都電荒川線・日暮里舎人ライナー・都バス です。本サービスは鉄道のみを扱い、都バスは対象外です。
+    都営交通無料乗車券の対象は 都営地下鉄(浅草線・三田線・新宿線・大江戸線)・
+    都電荒川線・日暮里舎人ライナー・都バス です。本サービスは鉄道のみを扱い、<span class="em-warn">都バスは対象外です</span>。
   </p>
   <p>
-    <strong>運賃は概算です。</strong>駅の緯度経度から営業キロを推定して各社の運賃表にあてはめているため、
-    実際の運賃と数十円ずれることがあります。割引の適用可否は最終的に各社の窓口の判断によります。
+    <span class="em-warn">運賃は概算です</span>。駅の緯度経度から営業キロを推定して各社の運賃表にあてはめているため、
+    <span class="em-warn">実際の運賃と数十円ずれることがあります</span>。割引の適用可否は最終的に各社の窓口の判断によります。
   </p>
   <p>
-    <strong>直通運転を使うときの注意:</strong> 他社線と都営線をまたいで乗る場合、
-    ICカード式より磁気式の無料乗車券のほうが便利です。ICカード式だと入場と出場を同じカードで
-    行う必要があるため、出場時に有人改札での精算手続きが必要になります
-    (<a href="https://www.kotsu.metro.tokyo.jp/other/kanren/fare/free.html" target="_blank" rel="noopener">東京都交通局の案内</a>)。
-  </p>
-  <p>
-    <strong>入力した駅名は端末の外に送信されません。</strong>検索はすべて端末の中で行っています。
+    入力した駅名は<span class="em-ok">端末の外に送信されません</span>。検索はすべて端末の中で行っています。
     利用者の記録も取っていません。
   </p>
   <p>
-    <strong>電波が届かなくても使えます。</strong>いちど開いておけば、地下や圏外でも動きます。
+    <span class="em-ok">電波が届かなくても使えます</span>。いちど開いておけば、地下や圏外でも動きます。
     ホーム画面に追加しておくとアプリのように使えます
     (iPhoneはSafariの共有ボタン →「ホーム画面に追加」、Androidはメニュー →「アプリをインストール」)。
   </p>
-  <h2>免責事項</h2>
-  <ol class="terms">
-    <li>本サービスが表示する経路・運賃・所要時間は<strong>目安</strong>であり、
+  <h2>免責のまとめ</h2>
+  <ul class="terms">
+    <li>本サービスが表示する経路・運賃・所要時間は目安であり、
       正確性・完全性を保証するものではありません。運賃は駅の位置から距離を推定して
       各社の運賃表にあてはめた概算です。</li>
-    <li>障害者割引が実際に適用されるかどうかは、<strong>各鉄道事業者の規程と窓口の判断</strong>によります。
+    <li>障害者割引が実際に適用されるかどうかは、各鉄道事業者の規程と窓口の判断によります。
       本サービスの表示を理由に割引を求めることはできません。</li>
     <li>時刻表・遅延・運休・工事等の運行情報は扱っていません。
       お出かけの前に各社の最新情報をご確認ください。</li>
     <li>本サービスの利用によって生じた損害について、
-      提供者は<strong>一切の責任を負いません</strong>。最終的な判断はご自身で行ってください。</li>
+      提供者は一切の責任を負いません。最終的な判断はご自身で行ってください。</li>
     <li>本サービスは予告なく内容の変更・提供の中断・終了を行うことがあります。</li>
     <li>誤りにお気づきの際はご連絡いただけると助かります。確認のうえ修正します。</li>
-  </ol>
+  </ul>
+  <p class="terms-link"><a href="rayv_toruken_kiyaku_policy.html">利用規約・プライバシーポリシー・わかりやすい説明</a></p>
   <p class="src">
     駅データ出典: <a href="https://ekidata.jp/" target="_blank" rel="noopener">駅データ.jp</a>
     / 対象範囲: 東京・神奈川・埼玉・千葉の鉄道130路線

@@ -234,18 +234,16 @@ $("histClearBtn").addEventListener("click", () => {
 $("starBtn").addEventListener("click", () => {
   const from = resolve("from", $("fromInput"));
   const to = resolve("to", $("toInput"));
-  if (!from && !to) {
-    $("starBtn").textContent = "★ 先に駅を入れてください";
-    setTimeout(() => { $("starBtn").textContent = "★ いま入れた2駅をよく使う駅に保存"; }, 1800);
+  if (!from) {
+    $("starBtn").textContent = "★ 先に出発駅を入れてください";
+    setTimeout(() => { $("starBtn").textContent = "★ 出発駅を保存"; }, 1800);
     return;
   }
-  // 到着駅を先に入れると、次回リストの先頭に出発駅が来て使いやすい
-  if (to) addSavedStation(to.name);
-  if (from) addSavedStation(from.name);
+  addSavedStation(from.name);
   renderSaved();
   renderExamples();
   $("starBtn").textContent = "★ 保存しました";
-  setTimeout(() => { $("starBtn").textContent = "★ いま入れた2駅をよく使う駅に保存"; }, 1800);
+  setTimeout(() => { $("starBtn").textContent = "★ 出発駅を保存"; }, 1800);
 });
 
 function currentOpts() {
@@ -279,7 +277,7 @@ function addSavedStation(name) {
 
 function renderSaved() {
   const list = savedStations();
-  for (const [boxId, inputId] of [["savedFrom", "fromInput"], ["savedTo", "toInput"]]) {
+  for (const [boxId, inputId] of [["savedFrom", "fromInput"]]) {
     const box = $(boxId);
     box.hidden = list.length === 0;
     const wrap = box.querySelector(".saved-chips");
@@ -559,7 +557,7 @@ function headline(best) {
   const money = document.createElement("p");
   money.className = "hl-money";
   money.innerHTML =
-    `<span class="was">通常 ${best.totalRegular}円</span>` +
+    `<span class="was">通常 ${best.totalRegular}円</span><span class="fare-approx">(概算)</span>` +
     `<span class="arrow" aria-hidden="true">→</span>` +
     `<span class="now">${best.totalActual}円</span>` +
     (save > 0 ? `<span class="save">${save}円 割引可能</span>` : "");
@@ -630,7 +628,7 @@ function routeCard(opt, i, total) {
     .map((b) => `<span class="rc-tag">${esc(b)}</span>`).join("");
   head.innerHTML =
     badges +
-    `<span class="rc-fare"><b>${opt.totalActual}円</b><span class="rc-was">通常 ${opt.totalRegular}円</span></span>` +
+    `<span class="rc-fare"><b>${opt.totalActual}円</b><span class="rc-was">通常 ${opt.totalRegular}円</span><span class="fare-approx">(概算)</span></span>` +
     `<span class="rc-meta">約${opt.time}分 ・ 乗換${opt.transfers}回</span>`;
   card.appendChild(head);
 

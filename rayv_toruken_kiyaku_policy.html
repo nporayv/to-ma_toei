@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>とるけん｜ご利用にあたって・利用規約・プライバシーポリシー</title>
+<style>
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;font-feature-settings:"palt";-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:64rem;margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+nav.toc ol{list-style:none;margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem);display:flex;max-width:64rem}
+nav.toc li{flex:1 1 0;min-width:0}
+nav.toc a{display:block;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc p{margin:0 0 1.15em}
+.doc p:last-child{margin-bottom:0}
+.art ol{margin:0;padding:0;list-style:none;counter-reset:cl}
+.art ol>li{counter-increment:cl;position:relative;padding-left:2.1rem;margin-bottom:1.05em}
+.art ol>li:last-child{margin-bottom:0}
+.art ul{margin:.7em 0 0;padding-left:1.1rem}
+.art ul li{margin-bottom:.45em}
+.sec ul{margin:.2em 0 1.15em;padding-left:1.1rem}
+.sec li{margin-bottom:.45em}
+.contact dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.5rem 1.4rem}
+.contact dd{margin:0}
+footer p{margin:0 0 .4em}
+
+:root{--red:#C0272D;--red-d:#8E1D22;--ink:#141414;--body:#3B3B3B;--mute:#8A8A8A;--rule:#E2E2E2;--paper:#FFFFFF;--measure:34rem}
+body{background:var(--paper);color:var(--body);font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic","Noto Sans JP","Meiryo",system-ui,sans-serif;font-size:16px;line-height:2;letter-spacing:.02em}
+.masthead{background:var(--red);color:#fff;padding:clamp(4rem,13vw,9rem) 0 clamp(2.5rem,7vw,4rem)}
+.masthead h1{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;font-size:clamp(2.2rem,7.5vw,4.2rem);line-height:1.2;letter-spacing:.01em;color:#fff}
+.masthead .sub{margin:1.2rem 0 0;font-size:.95rem;color:rgba(255,255,255,.82);font-weight:400}
+.masthead .meta{display:flex;flex-wrap:wrap;gap:.4rem 2.4rem;margin-top:clamp(2.5rem,6vw,4rem);padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.32);font-size:.82rem;color:rgba(255,255,255,.75)}
+.masthead .meta b{color:#fff;font-weight:500}
+nav.toc{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--rule)}
+nav.toc a{padding:1.05rem .2rem;color:var(--mute);font-size:.8rem;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--red);border-bottom-color:var(--red)}
+.part{padding:clamp(4rem,11vw,8rem) 0 clamp(2rem,6vw,4rem)}
+.part--alt{background:#FAF8F7}
+.part-head{max-width:var(--measure);margin-bottom:clamp(2.4rem,6vw,3.6rem)}
+.part-index{display:block;font-size:.75rem;color:var(--red);margin-bottom:1rem;letter-spacing:.14em;font-weight:500}
+.part-head h2{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;color:var(--ink);font-size:clamp(1.5rem,4.6vw,2.2rem);line-height:1.45}
+.part-head .lede{margin:1.3rem 0 0;font-size:.93rem;line-height:1.95}
+.doc{max-width:var(--measure)}
+.doc strong{color:var(--ink);font-weight:700}
+.doc a,.part-head .lede a{color:var(--red);text-underline-offset:.22em;word-break:break-all}
+.art,.sec{position:relative;padding:2.8rem 0;border-top:1px solid var(--rule)}
+.art-no{display:block;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;color:var(--red);font-size:2.4rem;line-height:1;margin-bottom:.5rem}
+.art h3{margin:0 0 1.4rem;color:var(--ink);font-size:1rem;font-weight:700;line-height:1.65}
+.art ol>li::before{content:counter(cl);position:absolute;left:0;top:0;width:1.4rem;text-align:right;color:var(--red);font-weight:500;font-size:.88rem}
+.sec>h3{margin:0 0 1.4rem;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;color:var(--ink);font-size:1.5rem;line-height:1.5}
+.sec h4{margin:2.2rem 0 .8rem;color:var(--ink);font-size:.95rem;font-weight:700;padding-left:.8rem;border-left:3px solid var(--red);line-height:1.7}
+.sec h4:first-of-type{margin-top:0}
+.contact{margin-top:1.2rem;border-top:1px solid var(--rule);padding-top:1.6rem;font-size:.93rem}
+.contact dt{color:var(--mute);font-size:.85rem}
+.contact dd{color:var(--ink)}
+.fusoku{margin-top:3rem;padding:1.6rem 0 0;border-top:2px solid var(--red);font-size:.88rem;color:var(--mute)}
+.fusoku b{display:block;color:var(--red);font-weight:500;margin-bottom:.4rem;font-size:.85rem}
+footer{padding:clamp(3.5rem,8vw,5rem) 0;background:var(--red);color:rgba(255,255,255,.8);font-size:.82rem}
+footer a{color:#fff}
+@media (min-width:900px){
+ .art,.sec{padding-left:7.5rem}
+ .art-no{position:absolute;left:0;top:2.8rem;width:6rem;text-align:right;font-size:3rem;margin:0}
+ .part-head{padding-left:7.5rem;max-width:calc(var(--measure) + 7.5rem)}
+ .doc{max-width:calc(var(--measure) + 7.5rem)}
+ .contact,.fusoku{margin-left:7.5rem}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1>とるけん<br>ご利用にあたって</h1>
+    <p class="sub">都営交通ルート検索ツール</p>
+    <div class="meta">
+      <span>提供　<b>NPO法人新・障害者支援機構RayV</b></span>
+      <span>施行　<b>令和8年9月15日</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目次">
+  <ol>
+    <li><a href="#guide">わかりやすい説明</a></li>
+    <li><a href="#terms">利用規約</a></li>
+    <li><a href="#privacy">プライバシーポリシー</a></li>
+  </ol>
+</nav>
+
+<!-- ============ PART 1 ============ -->
+<section class="part" id="guide">
+  <div class="wrap">
+    <div class="part-head">
+      <span class="part-index">1 / 3</span>
+      <h2>わかりやすい説明</h2>
+      <p class="lede">このアプリの利用規約とプライバシーポリシーの内容を、わかりやすい言葉で説明したものです。書いてある中身は正式な文書と同じですが、<strong>実際に効力を持つのは正式な利用規約とプライバシーポリシー</strong>です。正式な文書は、このページの<a href="#terms">後半</a>に掲載しています。</p>
+    </div>
+
+    <div class="doc">
+
+      <div class="sec">
+        <h3>このアプリは何か</h3>
+        <p>「とるけん」は、NPO法人新・障害者支援機構RayVが作って提供している、乗り換え経路の検索ツールです。</p>
+        <p>主に想定しているのは、<strong>東京都から都営交通無料乗車券をもらっている方</strong>が、出発する駅から目的の駅まで、都営交通を使って行く経路を調べる場面です。</p>
+        <p>このアプリは、当法人が独自に作ったものです。都営交通を運営している側や、検索結果に出てくる鉄道会社が公式に出しているアプリではありません。</p>
+        <p>アプリを使い始めた時点で、利用規約に同意したものとして扱われます。</p>
+      </div>
+
+      <div class="sec">
+        <h3>できること、できないこと</h3>
+
+        <h4>経路</h4>
+        <p>出発駅と目的駅を入れると、経路を表示します。</p>
+        <p>ただし、これは主に路線図をもとに計算した理論上の経路です。実際にその通りに行けるかどうかまでは保証できません。<strong>参考として使ってください。</strong></p>
+        <p>駅にエレベーターがあるか、乗り換え通路がどうなっているかといった、駅の設備や構造の情報は扱っていません。</p>
+
+        <h4>運賃</h4>
+        <p>表示される運賃は<strong>概算です</strong>。駅の緯度経度から距離を推定し、各鉄道会社の運賃表にあてはめて計算しています。実際の運賃と数十円ほどずれることがあります。</p>
+        <p>障害者手帳を見せたときの割引にも対応していますが、実際に割引が受けられるかどうかは、各鉄道会社の規程と窓口の判断によります。</p>
+
+        <h4>時刻表・遅延</h4>
+        <p><strong>扱っていません。</strong>時刻表、遅延、運休、工事の情報は一切入っていません。</p>
+        <p>出かける前に、各鉄道会社の最新情報を必ず確認してください。</p>
+
+        <h4>都バス</h4>
+        <p>都営交通無料乗車券は都バスにも使えますが、<strong>このアプリは鉄道だけを扱っています。</strong>都バスは対象外です。</p>
+      </div>
+
+      <div class="sec">
+        <h3>あなたの情報について</h3>
+
+        <h4>個人情報は取っていません</h4>
+        <p>このアプリは、利用者の個人情報を取得しません。</p>
+        <p>そもそも、氏名・住所・電話番号・メールアドレスなどを入力する画面がありません。位置情報も取得しません。</p>
+        <p>利用者の行動を記録して当法人や他社に送るような仕組み（アクセス解析、広告識別子など）は、一切組み込んでいません。</p>
+        <p>当法人は、このアプリを通じて、誰が使ったかを特定できる情報を何ひとつ持っていません。</p>
+
+        <h4>端末の中に残るもの</h4>
+        <p>使いやすさのために、検索した履歴や設定を、お使いの端末の中（ブラウザの保存領域）に保存することがあります。</p>
+        <p>これは端末の中だけに残るもので、当法人にも他の誰にも送られません。<strong>当法人がこれを見ることはできません。</strong></p>
+        <p>消したいときは、次のどちらかの方法でいつでも消せます。</p>
+        <ul>
+          <li>お使いのブラウザの設定から、このアプリのサイトデータを削除する</li>
+          <li>ホーム画面に追加したアイコンを削除する</li>
+        </ul>
+
+        <h4>障害や病気に関する情報</h4>
+        <p>障害の有無や病歴のような、扱いに特別な配慮が必要な情報（法律では「要配慮個人情報」といいます）についても、取得することを目的としていませんし、実際に取得しません。</p>
+        <p>そうした情報を入力させる機能も、そこから推し量るような機能もありません。</p>
+
+        <h4>なぜ安全と言えるのか</h4>
+        <p><strong>そもそも個人情報を取らない作りにしてある</strong>ためです。持っていない情報は、漏れることも、失われることもありません。当法人は、これが最も確実な安全対策だと考えています。</p>
+      </div>
+
+      <div class="sec">
+        <h3>通信について</h3>
+        <p>このアプリはGitHubというサービス上で公開されています。ブラウザで開いて「ホーム画面に追加」すると、アプリとして端末にインストールされます（PWAという仕組みです）。</p>
+        <p><strong>インストールしたあとは、経路の検索を含めてすべての処理が端末の中だけで完結します。</strong>入力した駅名などが、当法人や他社のサーバーに送られることはありません。電波の届かない場所でも動きます。</p>
+        <p>ただし、最初にアプリを取得するときの通信については、GitHub社のサーバー側に通信の記録（IPアドレスやブラウザの種類など）が残ることがあります。これはサービスを提供する上で技術的に生じるもので、<strong>当法人がこれを受け取ったり、見たり、使ったりすることはありません。</strong>この記録の扱いは、GitHub社の方針によります。</p>
+      </div>
+
+      <div class="sec">
+        <h3>広告とお金について</h3>
+        <p>このアプリは、この文書を作った時点では、<strong>広告を出しておらず、料金もいただいていません。</strong>当法人が行う事業として提供しているもので、営利を目的としたものではありません。</p>
+        <p>将来、広告を出すなどの変更をする場合は、<strong>事前にプライバシーポリシーを改定してお知らせします。</strong>黙って始めることはしません。</p>
+      </div>
+
+      <div class="sec">
+        <h3>差別や偏見が起きないように</h3>
+        <p>当法人は、個人情報の保護について法律や条例が定めている趣旨を守ります。</p>
+        <p>そのうえで、このアプリを使ったことで、利用者に不当な差別や偏見、不利益が生じることのないよう強く配慮し、そのために必要な対策を常にとります。</p>
+        <p>これは、当法人の定款第14条の2に定めた理念にもとづくものです。</p>
+      </div>
+
+      <div class="sec">
+        <h3>うまくいかなかったときの責任について</h3>
+        <p>ここは大切な部分なので、正確に書きます。</p>
+        <p>当法人は、このアプリの正確さ、内容の完全さ、安全性、そして利用者それぞれの目的に合っているかどうかについて、<strong>保証をしていません。</strong></p>
+        <p>そのため、このアプリを使ったこと、あるいは使えなかったことで損害が生じても、責任を負いません。無償で提供しているツールであることをご理解ください。</p>
+        <p>経路も運賃も目安であり、時刻表や遅延の情報は入っていません。<strong>実際に出かける前には、必ず各鉄道会社の最新情報をご確認ください。</strong></p>
+      </div>
+
+      <div class="sec">
+        <h3>駅のデータについて</h3>
+        <p>このアプリが使っている駅と路線のデータは、「駅データ.jp」（<a href="https://ekidata.jp/">https://ekidata.jp/</a>）を出典としています。</p>
+        <p>このデータは端末の中にあらかじめ入っているため、アプリを使うときに同サイトへ通信することはありません。</p>
+      </div>
+
+      <div class="sec">
+        <h3>内容が変わるとき</h3>
+        <p>アプリの内容の変更、一時的な停止、提供の終了は、予告なく行うことがあります。</p>
+        <p>利用規約とプライバシーポリシーは、改定することがあります。ただし規約の改定は、当法人の定款とプライバシーポリシーが定める範囲の中で行います。</p>
+        <p>プライバシーポリシーの改定は、利用者の権利を不当に害することのない範囲で行います。改定後の内容は、アプリ上または当法人のホームページに掲載した時点から効力を持ちます。</p>
+      </div>
+
+      <div class="sec">
+        <h3>お問い合わせ</h3>
+        <p>このアプリ、利用規約、プライバシーポリシーについてのお問い合わせ、ご相談、ご連絡は、下記へお願いします。</p>
+        <div class="contact">
+          <dl>
+            <dt>名称</dt><dd>NPO法人新・障害者支援機構RayV</dd>
+            <dt>事務所</dt><dd>東京都千代田区</dd>
+            <dt>メール</dt><dd><a href="mailto:master@raise-v.org">master@raise-v.org</a></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="fusoku">
+        <b>附則</b>
+        この説明は、令和8年9月15日から掲載しています。
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<section class="part part--alt" id="terms">
+  <div class="wrap">
+    <div class="part-head">
+      <span class="part-index">2 / 3</span>
+      <h2>とるけん－都営交通ルート検索ツール<br>利用規約</h2>
+    </div>
+
+    <div class="doc">
+
+      <div class="art">
+        <span class="art-no">1</span>
+        <h3>第1条（本ツールについて）</h3>
+        <ol>
+          <li>「とるけん－都営交通ルート検索ツール」（以下「本ツール」といいます。）は、NPO法人新・障害者支援機構RayV（以下「本法人」といいます。）が提供する、都営交通を経由した移動経路の検索ツールです。</li>
+          <li>本ツールの利用にあたっては、本規約に同意していただく必要があります。本ツールを利用した時点で、本規約に同意したものとみなします。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">2</span>
+        <h3>第2条（本ツールの提供元）</h3>
+        <p>本ツールは、本法人が独自に提供するものであり、都営交通の運営主体及び検索結果に表示される鉄道事業者が公式に提供するものではありません。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">3</span>
+        <h3>第3条（想定される利用者及び用途）</h3>
+        <ol>
+          <li>本ツールは、主として、東京都が交付する都営交通無料乗車券を利用する方が、出発駅から目的の駅まで都営交通を経由して移動する経路を検索することを想定しています。</li>
+          <li>都営交通無料乗車券の対象には都営バスが含まれますが、本ツールは鉄道のみを扱い、都営バスは対象外です。</li>
+          <li>本ツールは、経路検索の参考としてご利用ください。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">4</span>
+        <h3>第4条（本ツールが表示する情報）</h3>
+        <ol>
+          <li>本ツールが表示する経路は、主に路線図をもとに算出した理論上の経路情報であり、その正確性及び完全性を保証するものではありません。</li>
+          <li>本ツールは、駅の設備や構造その他の現地の状況に関する情報を提供するものではありません。</li>
+          <li>本ツールが表示する運賃は、駅の緯度経度から営業キロを推定し、各鉄道事業者の運賃表にあてはめて算出した<strong>概算</strong>であり、目安です。実際の運賃と数十円程度の差が生じることがあります。</li>
+          <li>本ツールは、障害者手帳の提示による割引等の減免制度に対応していますが、これが実際に適用されるかどうかは、各鉄道事業者の規程及び窓口の判断によります。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">5</span>
+        <h3>第5条（運行情報を扱わないこと）</h3>
+        <p>本ツールは、時刻表、遅延、運休、工事その他の運行情報を扱っていません。お出かけの前に、各鉄道事業者の最新情報を必ずご確認ください。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">6</span>
+        <h3>第6条（免責）</h3>
+        <ol>
+          <li>本法人は、本ツールの正確性、完全性、安全性、本ツールが利用者の特定の目的に適合し又は有効であることについて、何ら保証するものではありません。</li>
+          <li>本法人は、本ツールの利用又は利用不能により利用者に生じた損害について、一切の責任を負いません。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">7</span>
+        <h3>第7条（本ツールの変更・中断・終了）</h3>
+        <p>本法人は、予告なく、本ツールの内容の変更、提供の中断又は終了を行うことがあります。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">8</span>
+        <h3>第8条（本規約の改定）</h3>
+        <p>本法人は、本法人の活動の目的の範囲内において、本規約を改定することがあります。ただし、その改定は、本法人の定款及び本ツールのプライバシーポリシーの定める範囲内において行うものとします。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">9</span>
+        <h3>第9条（データの出典）</h3>
+        <p>本ツールが使用する鉄道駅及び路線に関するデータは、「駅データ.jp」（<a href="https://ekidata.jp/">https://ekidata.jp/</a>）を出典としています。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">10</span>
+        <h3>第10条（個人情報の取扱い）</h3>
+        <p>本ツールにおける利用者の情報の取扱いについては、別途定めるプライバシーポリシーによります。本ツールは、入力された駅名を含め、利用者の情報を端末の外部に送信しません。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">11</span>
+        <h3>第11条（お問い合わせ）</h3>
+        <p>本規約、プライバシーポリシーその他本ツールに関するお問い合わせ、ご相談及びご連絡は、次の連絡先までお願いいたします。</p>
+        <div class="contact" style="margin-left:0">
+          <dl>
+            <dt>名称</dt><dd>NPO法人新・障害者支援機構RayV</dd>
+            <dt>メール</dt><dd><a href="mailto:master@raise-v.org">master@raise-v.org</a></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="fusoku">
+        <b>附則</b>
+        本規約は、令和8年9月15日から施行する。
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<section class="part" id="privacy">
+  <div class="wrap">
+    <div class="part-head">
+      <span class="part-index">3 / 3</span>
+      <h2>とるけん－都営交通ルート検索ツール<br>プライバシーポリシー</h2>
+      <p class="lede">本プライバシーポリシー（以下「本ポリシー」といいます。）は、NPO法人新・障害者支援機構RayV（以下「本法人」といいます。）が提供するアプリケーション「とるけん－都営交通ルート検索ツール」（以下「本ツール」といいます。）における、利用者の情報の取扱いについて定めるものです。本法人は、本ポリシーを遵守します。</p>
+    </div>
+
+    <div class="doc">
+
+      <div class="art">
+        <span class="art-no">1</span>
+        <h3>第1条（基本方針）</h3>
+        <ol>
+          <li>本法人は、個人情報の保護に関する法律（平成15年法律第57号。以下「個人情報保護法」といいます。）その他の法令を遵守します。</li>
+          <li>本法人は、本ツールの提供にあたり、利用者の個人情報を取得することを目的としません。</li>
+          <li>本ツールは、本法人の定款第3条に定める目的を達成するために必要な事業として提供されるものであり、営利を目的とするものではありません。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">2</span>
+        <h3>第2条（個人情報を取得しないこと）</h3>
+        <ol>
+          <li><strong>本ツールは、利用者の個人情報を取得しません。</strong></li>
+          <li>本ツールには、氏名、住所、電話番号、メールアドレスその他の個人情報を入力する機能はありません。</li>
+          <li>本ツールは、利用者の位置情報を取得しません。</li>
+          <li>本ツールには、利用者の行動を記録し、又は本法人若しくは第三者に送信するためのアクセス解析ツール、広告識別子その他の仕組みは組み込まれていません。</li>
+          <li>本法人は、本ツールの利用を通じて、利用者を識別することができる情報を一切保有しません。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">3</span>
+        <h3>第3条（利用者の端末内に保存される情報）</h3>
+        <ol>
+          <li>本ツールは、利用者の利便性を向上させるため、検索履歴その他の設定情報を、利用者の端末内（ウェブブラウザの保存領域）に保存する場合があります。</li>
+          <li>前項の情報は、利用者の端末内にのみ保存されるものであり、本法人その他の第三者に送信されることはありません。本法人がこれを閲覧することはできません。</li>
+          <li>利用者は、利用しているウェブブラウザの設定から本ツールのサイトデータを削除する方法、又はホーム画面に追加した本ツールのアイコンを削除する方法により、前項の情報をいつでも削除することができます。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">4</span>
+        <h3>第4条（本ツールの提供形態及び通信記録）</h3>
+        <ol>
+          <li>本ツールは、GitHub, Inc.が提供するホスティングサービス上で公開されており、利用者がウェブブラウザを通じてこれを取得し、「ホーム画面に追加」する形式（PWA：Progressive Web App）でインストールすることにより、利用者の端末上で動作します。</li>
+          <li>本ツールは、経路の検索を含むすべての処理を利用者の端末内で完結して行います。検索の実行にあたり、駅名その他の入力内容が本法人又は第三者のサーバーに送信されることはありません。インストール後は、通信圏外においても動作します。</li>
+          <li>第1項の取得の際、GitHub, Inc.のサーバーにおいて、通信記録（IPアドレス、ウェブブラウザの種類等）が記録される場合があります。これは同社によるサービス提供に伴い技術的に生じるものであり、<strong>本法人がこれを取得し、閲覧し、又は利用することはありません。</strong></li>
+          <li>前項の通信記録の取扱いについては、GitHub, Inc.の定めるプライバシーに関する方針によります。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">5</span>
+        <h3>第5条（広告及び有料課金について）</h3>
+        <ol>
+          <li>本ポリシーは、広告の掲載又は有料課金を目的として定められたものではありません。</li>
+          <li>本ツールは、本ポリシーの施行の日現在、広告の掲載を行っておらず、また、有料課金その他利用者に金銭的負担を求めるものではありません。</li>
+          <li>将来、本ツールにおいて広告の掲載その他の事業を行う場合には、あらかじめ本ポリシーを改定し、利用者に周知します。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">6</span>
+        <h3>第6条（要配慮個人情報）</h3>
+        <ol>
+          <li>本法人は、本ツールにおいて、要配慮個人情報（個人情報保護法第2条第3項に定める、本人に対する不当な差別、偏見その他の不利益が生じないようにその取扱いに特に配慮を要する個人情報をいいます。以下同じ。）を取得することを目的とせず、また、これを取得しません。</li>
+          <li>本ツールには、利用者の障害の有無、病歴、心身の機能の障害その他要配慮個人情報に該当する情報を入力させ、又は推知する機能はありません。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">7</span>
+        <h3>第7条（差別及び偏見の防止に関する配慮）</h3>
+        <ol>
+          <li>本法人は、法律、条例その他の法令が定める個人情報の保護に関する規定の趣旨を遵守します。</li>
+          <li>本法人は、本ツールの利用者に対し、不当な差別、偏見その他の不利益が生じることのないよう特に強く配慮し、そのために必要な対策を常に講じるものとします。</li>
+          <li>前項の配慮は、本法人の定款第14条の2に定める理念に基づくものです。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">8</span>
+        <h3>第8条（安全管理措置）</h3>
+        <p>本法人は、本ツールにおいて個人情報を取得しない設計を採用することにより、利用者の情報が漏えい、滅失又は毀損する事態を根本的に生じさせないことを、最も確実な安全管理措置として位置づけます。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">9</span>
+        <h3>第9条（駅データの出典）</h3>
+        <p>本ツールが使用する駅及び路線に関するデータは、「駅データ.jp」（<a href="https://ekidata.jp/">https://ekidata.jp/</a>）を出典としています。当該データは利用者の端末内にあらかじめ収録されており、本ツールの利用にあたり同サイトへの通信が発生することはありません。</p>
+      </div>
+
+      <div class="art">
+        <span class="art-no">10</span>
+        <h3>第10条（本ポリシー及び利用規約の改定）</h3>
+        <ol>
+          <li>本法人は、本ポリシーを改定することがあります。</li>
+          <li>本ツールの利用規約は、本法人の活動の目的の範囲内において、改定することがあります。ただし、その改定は、本法人の定款及び本ポリシーの定める範囲内において行うものとします。</li>
+          <li>本ポリシーの改定は、利用者の権利を不当に害することとならない範囲で行うものとし、改定後の本ポリシーは、本ツール上又は本法人のホームページに掲載した時から効力を生じるものとします。</li>
+        </ol>
+      </div>
+
+      <div class="art">
+        <span class="art-no">11</span>
+        <h3>第11条（お問い合わせ窓口）</h3>
+        <p>本ポリシー及び本ツールに関するお問い合わせは、次の連絡先までお願いいたします。</p>
+        <div class="contact" style="margin-left:0">
+          <dl>
+            <dt>名称</dt><dd>NPO法人新・障害者支援機構RayV</dd>
+            <dt>主たる事務所</dt><dd>東京都千代田区</dd>
+            <dt>メール</dt><dd><a href="mailto:master@raise-v.org">master@raise-v.org</a></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="fusoku">
+        <b>附則</b>
+        本ポリシーは、令和8年9月15日から施行する。
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>とるけん－都営交通ルート検索ツール</p>
+    <p>NPO法人新・障害者支援機構RayV　<a href="mailto:master@raise-v.org">master@raise-v.org</a></p>
+    <p>駅及び路線のデータ出典：<a href="https://ekidata.jp/">駅データ.jp</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

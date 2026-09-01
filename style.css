@@ -648,3 +648,59 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .tl-fare.included {
   font-weight: 400; font-size: .78rem; color: var(--muted);
 }
+
+/* --- バージョンバッジ --- */
+.site-header { position: relative; }
+.ver-badge {
+  position: absolute; top: 10px; right: 12px;
+  font-size: .7rem;
+  padding: 2px 9px; border-radius: 20px;
+  background: #f5e6c8; color: #7a5a00; border: 1px solid #d4a843;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ver-badge {
+    background: #2e2006; color: #e6c170; border-color: #9a7830;
+  }
+}
+:root[data-theme="dark"] .ver-badge {
+  background: #2e2006; color: #e6c170; border-color: #9a7830;
+}
+
+/* ヘッダのタイトル内「(仮称)」注記 */
+.title-kari { font-size: .55em; color: var(--head-sub); margin-left: .3em; font-weight: 400; }
+
+/* --- 同意バー --- */
+.consent-bar {
+  margin: 0 0 14px; padding: 8px 12px;
+  border: 1px solid var(--line); border-radius: 8px;
+  font-size: .8rem; color: var(--muted); text-align: center;
+}
+.consent-bar a { color: var(--focus); }
+
+/* --- 弱点・強みの強調(下線+色、ボールドなし) --- */
+.em-warn {
+  text-decoration: underline;
+  text-decoration-color: var(--danger);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  color: var(--danger);
+}
+.em-ok {
+  text-decoration: underline;
+  text-decoration-color: var(--free);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  color: var(--free);
+}
+
+/* 免責一覧: 番号なし */
+.terms { list-style: none; margin: 0 0 8px; padding: 0; font-size: .82rem; }
+.terms li { margin-bottom: 6px; padding-left: .8em; position: relative; }
+.terms li::before { content: "・"; position: absolute; left: 0; color: var(--muted); }
+
+/* 規約リンク */
+.terms-link { margin: 0 0 10px; font-size: .82rem; }
+.terms-link a { color: var(--focus); }
+
+/* 運賃概算の注記 */
+.fare-approx { font-size: .78em; color: var(--muted); margin-left: 3px; }
