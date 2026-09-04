@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEWS RELEASE｜都営交通無料乗車券利用者のための経路検索ツール「とるけん」を公開｜NPO法人新・障害者支援機構RayV</title>
+<style>
+:root{--red:#C0272D;--red-d:#8E1D22;--ink:#141414;--body:#3B3B3B;--mute:#8A8A8A;--rule:#E2E2E2;--paper:#FFFFFF}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--body);font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic","Noto Sans JP","Meiryo",system-ui,sans-serif;font-size:16px;line-height:1.95;letter-spacing:.02em;font-feature-settings:"palt";-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:46rem;margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+a{color:var(--red-d)}
+
+.masthead{background:var(--red);color:#fff;padding:clamp(2.6rem,8vw,4.2rem) 0 clamp(2.2rem,6vw,3rem)}
+.masthead .label{margin:0 0 1.1rem;font-size:.78rem;letter-spacing:.16em;color:rgba(255,255,255,.82);font-weight:500}
+.masthead h1{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;font-size:clamp(1.55rem,5.2vw,2.3rem);line-height:1.55;letter-spacing:.01em;color:#fff}
+.masthead .sub{margin:1rem 0 0;font-size:.9rem;color:rgba(255,255,255,.85);font-weight:400;line-height:1.7}
+.masthead .meta{display:flex;flex-wrap:wrap;margin-top:clamp(1.8rem,5vw,2.6rem);padding-top:1.3rem;border-top:1px solid rgba(255,255,255,.32);font-size:.82rem;color:rgba(255,255,255,.78)}
+.masthead .meta span{margin:0 2.2rem .35rem 0;display:inline-block}
+.masthead .meta b{color:#fff;font-weight:500;margin-right:.6em}
+
+main{padding:clamp(2.4rem,6vw,3.4rem) 0 1rem}
+.lede{font-size:1rem;line-height:2.05;margin:0 0 1.4rem}
+.url-block{margin:0 0 2.6rem;padding:1rem 1.2rem;background:#FAFAFA;border-left:3px solid var(--red);font-size:.95rem;word-break:break-all}
+.url-block a{text-decoration:none;font-weight:500}
+.url-block a:hover{text-decoration:underline}
+
+.sec{padding:1.9rem 0;border-top:1px solid var(--rule)}
+.sec:first-of-type{border-top:none;padding-top:0}
+.sec.avoid{page-break-inside:avoid}
+.sec h2{margin:0 0 1.3rem;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","MS PMincho",serif;font-weight:700;font-size:1.28rem;color:var(--ink);padding-left:.9rem;border-left:4px solid var(--red)}
+.sec p{margin:0 0 1.1em}
+.sec p:last-child{margin-bottom:0}
+
+.subsec{margin-bottom:1.7rem;page-break-inside:avoid}
+.subsec:last-child{margin-bottom:0}
+.subsec h3{margin:0 0 .5rem;font-size:.96rem;font-weight:700;color:var(--ink)}
+.subsec p{font-size:.94rem;margin:0 0 .8em}
+.subsec p:last-child{margin-bottom:0}
+
+.feature{margin-bottom:1.9rem;page-break-inside:avoid}
+.feature:last-child{margin-bottom:0}
+.feature h3{margin:0 0 .55rem;font-size:.98rem;font-weight:700;color:var(--ink)}
+.feature p{margin:0;font-size:.94rem}
+
+table.info{width:100%;border-collapse:collapse;font-size:.92rem}
+table.info tr{page-break-inside:avoid}
+table.info th,table.info td{text-align:left;padding:.85em 1em;border-top:1px solid var(--rule);vertical-align:top}
+table.info tr:first-child th,table.info tr:first-child td{border-top:none}
+table.info th{width:9.5em;color:var(--mute);font-weight:500;white-space:nowrap}
+table.info td{color:var(--ink)}
+
+.contact dl{margin:0 0 2rem;display:grid;grid-template-columns:auto 1fr;gap:.6rem 1.6rem;font-size:.94rem}
+.contact dt{color:var(--mute)}
+.contact dd{margin:0;color:var(--ink)}
+
+.formblock{page-break-inside:avoid}
+.formblock h3{margin:0 0 1rem;font-size:1rem;font-weight:700;color:var(--ink)}
+.notice{background:#FAFAFA;border-left:3px solid var(--red);padding:1rem 1.2rem;font-size:.85rem;color:var(--body);margin-bottom:1.8rem;line-height:1.85}
+.notice b{color:var(--ink)}
+.field{margin-bottom:1.5rem}
+.field label{display:block;font-size:.85rem;font-weight:500;color:var(--ink);margin-bottom:.5rem}
+.field .req{color:var(--red);font-weight:500;margin-left:.4em;font-size:.78rem}
+.field .opt{color:var(--mute);font-weight:400;margin-left:.4em;font-size:.78rem}
+.field input[type=text],.field input[type=email],.field select,.field textarea{
+  width:100%;padding:.75em .9em;border:1px solid var(--rule);border-radius:2px;
+  font-family:inherit;font-size:.95rem;color:var(--ink);background:#fff;line-height:1.6
+}
+.field textarea{resize:vertical;min-height:8em}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--red);outline-offset:1px;border-color:var(--red)}
+.hint{margin-top:.4rem;font-size:.78rem;color:var(--mute)}
+.actions{margin-top:2.2rem}
+button.submit{
+  display:block;width:100%;padding:.95em 1em;background:var(--red);color:#fff;border:none;border-radius:2px;
+  font-family:inherit;font-size:.98rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:background .15s
+}
+button.submit:hover{background:var(--red-d)}
+.err{color:var(--red-d);font-size:.82rem;margin-top:.7rem;display:none}
+
+footer{padding:1.6rem 0 1.6rem;border-top:1px solid var(--rule);text-align:center}
+footer p{margin:0;color:var(--mute);font-size:.85rem;letter-spacing:.08em}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="label">NEWS RELEASE</p>
+    <h1>都営交通無料乗車券利用者のための<br>経路検索ツール「とるけん」を公開</h1>
+    <p class="sub">― 当事者の移動負担軽減を目的とした無償ウェブアプリケーション ―</p>
+    <div class="meta">
+      <span><b>発表日</b>令和8年9月3日</span>
+      <span><b>発表者</b>NPO法人新・障害者支援機構RayV　通称RayV(ライブ)</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="lede">NPO法人新・障害者支援機構RayV（東京都千代田区、以下「当法人」）は、都営交通無料乗車券を優先的に活用するための乗換案内ツール「とるけん－都営交通ルート検索ツール」（以下「本ツール」）を公開した。本ツールは、下記URLで公開しており、アクセスし、iPhone、AndroidデバイスにWebアプリケーションとしてインストール（「ホーム画面に追加」形式）すれば、利用時にURLにアクセスせず、機内モードなどオフラインでも利用することができる。</p>
+  <p class="url-block"><a href="https://nporayv.github.io/to-ma_toei/" target="_blank" rel="noopener">https://nporayv.github.io/to-ma_toei/</a></p>
+
+  <section class="sec">
+    <h2>公開の背景</h2>
+
+    <div class="subsec">
+      <h3>当法人について</h3>
+      <p>当法人は、「障害者に関する問題解決には当事者の視点こそ重要である」という考えのもとで、主に障害や疾患を持つスタッフや支援者が意思決定の中心として、障害者雇用の促進や改善等のための活動を行うNPO法人である。</p>
+    </div>
+
+    <div class="subsec">
+      <h3>都営交通無料乗車券とは</h3>
+      <p>東京都は、身体障害者手帳・愛の手帳・精神障害者保健福祉手帳の所持者等を対象に、都営地下鉄・都電荒川線・日暮里舎人ライナー・都営バスを無償で利用できる「都営交通無料乗車券」を交付している。</p>
+      <p>一方、都内の移動には都営線以外の鉄道事業者（JR・東京メトロ・私鉄各社）が関わる場面が多く、他社線の障害者割引は原則として片道100kmを超えなければ適用されない。特に、都営交通無料乗車券を主に利用するシーンが多い東京都近郊において、障害者手帳を提示することで、移動距離にかかわらずに障害者割引を実施している鉄道会社は京成電鉄のみと思われる。</p>
+    </div>
+
+    <div class="subsec">
+      <h3>都営交通無料乗車券の利便性について</h3>
+      <p>「都営交通無料乗車券」の交付対象者は、多かれ少なかれ生活面、健康面などにおいてハンディキャップを有しているといって差し支えないといえ、都営交通である都営地下鉄各路線や都営バスの利用において受けられる運賃の減免は、当事者にとって大きな恩恵である。</p>
+      <p>一方で、無料乗車券を活用するには、どこで都営地下鉄に乗り換えればよいのか、どの駅が都営交通の駅なのかといった知識が必要となる。</p>
+    </div>
+
+    <div class="subsec">
+      <h3>既存の乗換案内サービスの多くが対応していない機能</h3>
+      <p>主に東京都近郊で電車での移動の際に、なるべく無料乗車券による減免・割引を受けられる都営線を経由することができれば実際の運賃負担が大きく変わるが、各種乗換案内サービスは基本的に「都営交通を優先的に経由する」機能を搭載しておらず、無料乗車券を利用し、減免・割引をなるべく受けながら移動する経路を探すことは、複数の乗換案内サービスを組み合わせたり、都営交通に乗換が可能な駅を調べ、その駅を経由駅に設定して検索するなど、工夫が必要だった。</p>
+      <p>そのため、出発駅と到着駅を入力することで「都営交通を優先的に利用できる経路を表示させる機能」に特化したツールがあれば、利用者の負担軽減に繋がるという発想をもとに本ツールの開発、公開に至った。</p>
+    </div>
+
+    <div class="subsec">
+      <h3>「外出の動機」というねらい</h3>
+      <p>ただし、都営交通無料乗車券の利用については、たとえば移動がすべて無料となるルートを検討し、生活上必要な範囲を超えて利用するようなケースがあるとすれば、無料乗車券の趣旨にそぐわないのではないかという意見も開発段階において存在した。しかし、無料乗車券を利用している人には、経済的、健康的な事情から外出を躊躇する人も少なくないと考えられる。それは当事者として、簡単には抜け出すことのできない、言うならば社会的な障害でもあると考える。</p>
+      <p>そして、本ツールの利用により、少ない負担で電車での移動ができる（つまり、なるべくお金をかけずに電車で移動できる）情報を提供することは、外出の動機付けにもなると言え、ひいては障害者当事者の外出・就労・気分転換に活用でき、社会参加の促進という効果を生むことができると考えることもできることも、本ツールの提供目的のひとつである。</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>サービス概要</h2>
+    <table class="info">
+      <tr><th>名称</th><td>とるけん－都営交通ルート検索ツール</td></tr>
+      <tr><th>提供元</th><td>NPO法人新・障害者支援機構RayV</td></tr>
+      <tr><th>URL</th><td><a href="https://nporayv.github.io/to-ma_toei/">https://nporayv.github.io/to-ma_toei/</a></td></tr>
+      <tr><th>想定利用者</th><td>都営交通無料乗車券の交付を受けている方</td></tr>
+      <tr><th>対応範囲</th><td>都営地下鉄・都電荒川線・日暮里舎人ライナー（鉄道のみ、都営バスは対象外）</td></tr>
+      <tr><th>データ収録範囲</th><td>東京・神奈川・埼玉・千葉の鉄道130路線（出典：駅データ.jp）</td></tr>
+      <tr><th>利用料金</th><td>無償</td></tr>
+      <tr><th>動作環境</th><td>ウェブブラウザ（PWA対応、ホーム画面への追加が可能）</td></tr>
+      <tr><th>バージョン</th><td>Ver 1.00</td></tr>
+    </table>
+  </section>
+
+  <section class="sec avoid">
+    <h2>主な特徴</h2>
+
+    <div class="feature">
+      <h3>1. 都営交通を優先した経路・概算運賃の案内</h3>
+      <p>出発駅から到着駅まで、都営交通の利用区間を最大化する経路を優先的に案内する。あわせて、駅の位置情報から算出した概算運賃を表示する。</p>
+    </div>
+
+    <div class="feature">
+      <h3>2. 障害者手帳の種別に応じた案内</h3>
+      <p>「第1種（介護者も割引）」「第2種（本人のみ割引）」「介護者と同乗」の別を設定でき、手帳種別ごとに異なる割引の扱いを踏まえた案内を行う。</p>
+    </div>
+
+    <div class="feature">
+      <h3>3. 完全オフライン動作・プライバシーへの配慮</h3>
+      <p>経路検索を含む一切の処理を利用者の端末内で完結して行う仕組みを採用しており、駅名等の入力内容が外部に送信されることはない。インストール後は、地下鉄構内など通信圏外でも利用できる。</p>
+    </div>
+
+    <div class="feature">
+      <h3>4. 複数のデザインテーマ</h3>
+      <p>文字の書体・配色を複数の中から選択できる。</p>
+    </div>
+  </section>
+
+  <section class="sec avoid">
+    <h2>ご利用にあたって</h2>
+    <p>本ツールが提供する経路・運賃・所要時間は目安であり、正確性・完全性を保証するものではない。障害者割引の適用可否は、最終的に各鉄道事業者の窓口の判断による。時刻表・遅延・運休・工事等の運行情報は扱っていない。</p>
+    <p>詳細は、本ツール内に掲載の利用規約・プライバシーポリシーを参照のこと。</p>
+  </section>
+
+  <section class="sec contact">
+    <h2>本リリースに関するお問い合わせ</h2>
+    <dl>
+      <dt>法人名</dt><dd>NPO法人新・障害者支援機構RayV</dd>
+      <dt>E-mail</dt><dd><a href="mailto:master@raise-v.org">master@raise-v.org</a></dd>
+    </dl>
+
+    <div class="formblock">
+      <h3>お問い合わせフォーム</h3>
+      <p class="notice">
+        <b>このフォームについて。</b>下の項目を入力して送信ボタンを押すと、入力内容を記載した状態でお使いのメールソフトが起動します。このページ自体が直接メールを送信するものではありません。メールソフトの画面で内容をご確認のうえ、送信を行ってください。
+      </p>
+
+      <form id="contact-form">
+        <div class="field">
+          <label for="f-name">お名前<span class="opt">任意</span></label>
+          <input type="text" id="f-name" name="name" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="f-email">ご返信先メールアドレス<span class="req">必須</span></label>
+          <input type="email" id="f-email" name="email" autocomplete="email" required>
+          <p class="hint">ご返信のため、正確にご入力ください。</p>
+        </div>
+
+        <div class="field">
+          <label for="f-type">お問い合わせ種別<span class="req">必須</span></label>
+          <select id="f-type" name="type" required>
+            <option value="">選択してください</option>
+            <option value="使い方について">使い方について</option>
+            <option value="不具合のご報告">不具合のご報告</option>
+            <option value="ご意見・ご要望">ご意見・ご要望</option>
+            <option value="取材・掲載に関するお問い合わせ">取材・掲載に関するお問い合わせ</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-body">お問い合わせ内容<span class="req">必須</span></label>
+          <textarea id="f-body" name="body" required placeholder="できるだけ詳しくご記入ください。不具合のご報告の場合は、ご利用の端末（iPhone／Android等）やブラウザ、発生時の操作内容もあわせてお書きいただけますと助かります。"></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="submit">メールソフトを起動して送信する</button>
+          <p class="err" id="err-msg">ご返信先メールアドレスとお問い合わせ内容をご入力ください。</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sec avoid">
+    <h2>法人概要</h2>
+    <table class="info">
+      <tr><th>名称</th><td>NPO法人新・障害者支援機構RayV</td></tr>
+      <tr><th>主たる事務所</th><td>東京都千代田区神田和泉町1番地6-16ヤマトビル405</td></tr>
+      <tr><th>代表者</th><td>代表理事　下斗米啓（行政書士）</td></tr>
+      <tr><th>事業内容</th><td>当事者による、障害者支援に関する事業 等</td></tr>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><p>以上</p></div>
+</footer>
+
+<script>
+document.getElementById('contact-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var name = document.getElementById('f-name').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  var type = document.getElementById('f-type').value;
+  var body = document.getElementById('f-body').value.trim();
+  var err = document.getElementById('err-msg');
+
+  if(!email || !type || !body){
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+
+  var subject = '【とるけん お問い合わせ】' + type;
+  var lines = [];
+  lines.push('お問い合わせ種別：' + type);
+  lines.push('お名前：' + (name || '（未記入）'));
+  lines.push('ご返信先：' + email);
+  lines.push('');
+  lines.push('----------------------------------------');
+  lines.push(body);
+  lines.push('----------------------------------------');
+
+  var mailto = 'mailto:master@raise-v.org'
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(lines.join('\n'));
+
+  window.location.href = mailto;
+});
+</script>
+
+</body>
+</html>
