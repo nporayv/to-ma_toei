@@ -759,6 +759,11 @@ main { max-width: 680px; margin: 0 auto; padding: 20px 16px 8px; }
 .site-footer a { color: var(--focus); }
 .src { font-size: .78rem; }
 
+/* データ作成日とアプリのバージョンは、ふだんの利用に必要な情報ではないので
+   表示色を「暗い」にしたときだけ出す。動作の確認や問い合わせのときに使う。 */
+.src-tech { display: none; }
+:root[data-theme="dark"] .src-tech { display: block; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

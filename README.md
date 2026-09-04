@@ -182,7 +182,7 @@ python tools/build_network.py   # network.json 再生成 + sw.js のVERSION自�
 | `docs/data-requests.md` | 必要なデータの一覧と、受領済み資料の状況 |
 | `docs/walk-transfer-candidates.md` | 徒歩乗換の候補一覧(54組中42組を採用済み) |
 | `rayv_toruken_kiyaku_policy.html` | 利用規約・プライバシーポリシー・わかりやすい説明 |
-| `LICENSE` / `NOTICE` | Apache-2.0 の全文と、出典・運賃の但し書き |
+| `LICENSE` / `NOTICE` | PolyForm Noncommercial 1.0.0 の全文と、出典・運賃の但し書き |
 
 ## 経路探索のしくみ
 
@@ -263,15 +263,20 @@ ICカード式は入場と出場を同じカードで行う必要があるため
 
 ## ライセンス
 
-このソフトウェアは [Apache License, Version 2.0](LICENSE) のもとで公開しています。
+このソフトウェアは [PolyForm Noncommercial License 1.0.0](LICENSE) のもとで公開しています。
 
 Copyright 2026 NPO法人新・障害者支援機構RayV
 
-自由に改変して再配布できます。その際、次の2点をお守りください。
+### 非営利目的なら自由に使えます
 
-- **変更したファイルには、変更した旨を明記してください**(ライセンス第4条b)。
-  このアプリは障害のある方に運賃を案内します。運賃表や割引ルールを書き換えた版が
-  元のものと区別できないと、利用者が改札で足りない思いをする原因になります。
-- **RayVの名称を、当法人が推奨しているかのように使わないでください**(第6条)。
+NPO・学校・自治体・公共の安全に関わる団体等の利用は、Noncommercial Organizations1.0.0の範囲で許諾範囲に含まれます
+
+### 商用利用には別途許諾が必要です
+
+営利目的での利用をご希望の場合は master@raise-v.org までご連絡ください。
+
+### お願い(義務ではありません)
+
+運賃表や割引ルールを書き換えた版を配布する場合は、本アプリ利用規約の趣旨の範囲内で行ってください。
 
 駅・路線データの出典と、運賃についての但し書きは [NOTICE](NOTICE) をご覧ください。

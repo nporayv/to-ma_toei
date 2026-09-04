@@ -715,8 +715,20 @@ function stepList(opt) {
       const a = net.stations.get(r.walk.path[0]).name;
       const b = net.stations.get(r.walk.path.slice(-1)[0]).name;
       const min = Math.round(r.walk.meters / 80 + 3);
-      add("walk", `<b>${esc(a)}</b> で降りて、<b>${esc(b)}</b> まで歩く`,
-        `約${min}分・${Math.round(r.walk.meters)}m。いちど改札を出ます`);
+      // 距離と所要時間は手順の本文に入れる。どれくらい歩くのかは
+      // 行けるかどうかの判断に直結するため、補足ではなく主文に置く。
+      const dist = `約${Math.round(r.walk.meters)}m・徒歩${min}分`;
+      if (i === 0) {
+        // 出発駅から乗車駅まで歩く場合。まだ電車に乗っていないので
+        // 「降りて」とは言えないし、改札を出る動作も発生しない。
+        add("walk start", `<b>${esc(a)}</b> から <b>${esc(b)}</b> まで歩く(${dist})`, null);
+      } else {
+        add("walk", `<b>${esc(a)}</b> で降りて、<b>${esc(b)}</b> まで歩く(${dist})`,
+          "いちど改札を出ます");
+      }
+      // 最後が徒歩の場合、ここが到着になる。
+      // 書かないと「歩く」で手順が終わり、着いたことが分からない。
+      if (i === rides.length - 1) add("goal", `<b>${esc(b)}</b> に到着`, "到着です");
       return;
     }
 
@@ -753,7 +765,8 @@ function stepList(opt) {
   box.className = "steps-box";
   const h = document.createElement("h4");
   h.className = "steps-head";
-  const changes = ol.querySelectorAll(".step.change, .step.walk").length;
+  // 出発駅から乗車駅まで歩くのは「乗り換え」ではないので数に入れない
+  const changes = ol.querySelectorAll(".step.change, .step.walk:not(.start)").length;
   h.textContent = changes === 0 ? "やること(乗り換えなし)" : `やること(乗り換え ${changes} 回)`;
   box.appendChild(h);
   box.appendChild(ol);

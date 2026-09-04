@@ -166,9 +166,12 @@
   <p class="src">
     駅データ出典: <a href="https://ekidata.jp/" target="_blank" rel="noopener">駅データ.jp</a>
     / 対象範囲: 東京・神奈川・埼玉・千葉の鉄道130路線
-    / データ作成日: <span id="dataDate">—</span>
+  </p>
+  <!-- データ作成日とアプリのバージョンは、ふだんの利用に要らない技術情報なので
+       表示色を「暗い」にしたときだけ出す(style.css の .src-tech) -->
+  <p class="src src-tech">
+    データ作成日: <span id="dataDate">—</span>
     / アプリのバージョン: <span id="appVersion">—</span>
-    (<a href="https://github.com/nporayv/to-ma_toei/blob/main/docs/CHANGELOG.md" target="_blank" rel="noopener">変更履歴</a>)
   </p>
 </footer>
 
